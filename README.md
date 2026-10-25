@@ -3,6 +3,8 @@
 
 Offline Firefox start page. Single file (`index.html`), no internet needed to load.
 
+![Firefox Landing Page screenshot](screenshot.png)
+
 ## Layout
 - **Left pane:** link buttons by group (Banks, Expenses and Loans). Edit the `LINKS` list at the top of the script in `index.html`.
 - **Center:** large 12-hour digital clock, date, and a month calendar (pink, today glows; ◀ ▶ and Today buttons).

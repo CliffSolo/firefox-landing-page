@@ -34,3 +34,4 @@
 - Added a web search box (DuckDuckGo, opens in a new tab) at the top of the center column.
 - Each pane now fits the window and scrolls inside itself if needed; checkboxes drawn with CSS (the ☐ symbol was missing from the font).
 - Notes update automatically: systemd user units re-run `sync_notes.py` when ASAP, Bills or a daily note changes, after midnight and at login; the open page re-reads `notes.js` every minute.
+- Added `screenshot.png` (personal links and notes blanked out) to the top of the README.
