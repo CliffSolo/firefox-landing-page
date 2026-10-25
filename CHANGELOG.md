@@ -9,3 +9,4 @@
 - Link buttons now open in a new tab.
 - Added "Misc Sites" favorites section (5 slots: 1–4 empty, 5 = GitHub).
 - Added "Last Visited" section: last 5 buttons clicked on the homepage, newest first (saved in Firefox local storage).
+- Added a daily inspirational quote and a psychology/behavior tip between the clock and the calendar (20 of each, built in; changes each day).

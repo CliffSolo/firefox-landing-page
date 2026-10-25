@@ -64,8 +64,19 @@
   #clock .ampm { font-size: .35em; margin-left: .25em; color: var(--muted); letter-spacing: 1px; }
   #date { color: var(--muted); margin-top: 10px; font-size: 16px; }
 
+  /* Daily quote + psychology tip */
+  .daily { max-width: 460px; text-align: center; margin-top: 3vh; }
+  #quote { font-style: italic; font-size: 16px; line-height: 1.5; }
+  #quoteBy { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .tip { margin-top: 3em; } /* the two blank lines */
+  .tip-label {
+    color: var(--cyan); font-size: 11px; text-transform: uppercase;
+    letter-spacing: .1em; font-weight: 600; margin-bottom: 4px;
+  }
+  #tip { color: var(--muted); font-size: 14px; line-height: 1.5; }
+
   .calendar {
-    margin-top: 5vh; width: 100%; max-width: 420px;
+    margin-top: 4vh; width: 100%; max-width: 420px;
     background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px;
   }
   .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
@@ -119,6 +130,14 @@
   <main class="center">
     <div id="clock">--:--</div>
     <div id="date"></div>
+    <section class="daily">
+      <div id="quote"></div>
+      <div id="quoteBy"></div>
+      <div class="tip">
+        <div class="tip-label">Psychology tip</div>
+        <div id="tip"></div>
+      </div>
+    </section>
     <section class="calendar">
       <div class="cal-head">
         <div class="cal-title" id="calTitle"></div>
@@ -257,7 +276,63 @@ document.getElementById("prev").onclick = () => { view.setMonth(view.getMonth() 
 document.getElementById("next").onclick = () => { view.setMonth(view.getMonth() + 1); renderCal(); };
 document.getElementById("today").onclick = () => { view = new Date(); view.setDate(1); renderCal(); };
 
-// Clock (also redraws the calendar when the date rolls over)
+// Daily quote + psychology tip (a new one each day, cycling through the lists)
+const QUOTES = [
+  ["The impediment to action advances action. What stands in the way becomes the way.", "Marcus Aurelius"],
+  ["Waste no more time arguing what a good man should be. Be one.", "Marcus Aurelius"],
+  ["We suffer more often in imagination than in reality.", "Seneca"],
+  ["Difficulties strengthen the mind, as labor does the body.", "Seneca"],
+  ["Begin at once to live, and count each separate day as a separate life.", "Seneca"],
+  ["First say to yourself what you would be; and then do what you have to do.", "Epictetus"],
+  ["No man is free who is not master of himself.", "Epictetus"],
+  ["He who has a why to live can bear almost any how.", "Friedrich Nietzsche"],
+  ["Knowing is not enough; we must apply.", "Johann Wolfgang von Goethe"],
+  ["Well done is better than well said.", "Benjamin Franklin"],
+  ["Energy and persistence conquer all things.", "Benjamin Franklin"],
+  ["Do what you can, with what you have, where you are.", "Theodore Roosevelt"],
+  ["We are what we repeatedly do.", "Will Durant"],
+  ["Small deeds done are better than great deeds planned.", "Peter Marshall"],
+  ["Amateurs sit and wait for inspiration, the rest of us just get up and go to work.", "Stephen King"],
+  ["What we fear doing most is usually what we most need to do.", "Tim Ferriss"],
+  ["Discipline equals freedom.", "Jocko Willink"],
+  ["Slow is smooth, smooth is fast.", "Military saying"],
+  ["Fall seven times, stand up eight.", "Japanese proverb"],
+  ["The best time to plant a tree was 20 years ago. The second best time is now.", "Proverb"],
+];
+
+const TIPS = [
+  "If-then plans (\"If it's 7 PM, then I go to the gym\") make you far more likely to follow through than a goal alone.",
+  "The spotlight effect: people notice your mistakes and appearance much less than you think they do.",
+  "Peak-end rule: people remember an experience mostly by its most intense moment and how it ended. End meetings and visits on a high note.",
+  "Naming a feeling (\"I'm angry right now\") measurably lowers its intensity. Labeling calms the brain's alarm system.",
+  "Reciprocity: people feel pressure to return a favor, even a small unasked one. Watch for free gifts in sales pitches.",
+  "Anchoring: the first number mentioned pulls every later number toward it. In a negotiation, make the first offer when you can.",
+  "Loss aversion: a loss feels about twice as strong as an equal gain. \"Don't lose $50\" moves people more than \"save $50\".",
+  "Fundamental attribution error: we blame others' behavior on character, our own on circumstances. Assume a bad day first.",
+  "Unfinished tasks keep nagging your mind. Writing down the exact next step is often enough to quiet them.",
+  "Sleep loss hurts judgment and mood, and the sleep-deprived badly underestimate how impaired they are.",
+  "Confirmation bias: we look for evidence that agrees with us. Ask \"what would prove me wrong?\"",
+  "Planning fallacy: we underestimate how long tasks take. Use how long it took last time, not how long it should take.",
+  "Habits form through repetition in the same context. Tie a new habit to something you already do daily.",
+  "Social proof: when unsure, people copy what others are doing. Long lines and \"most people choose\" work for that reason.",
+  "Scarcity: things seem more valuable when they look limited. \"Only 2 left\" is a pressure tactic. Pause before buying.",
+  "Foot-in-the-door: agreeing to a small request makes people likelier to agree to a bigger one later.",
+  "Mere exposure: we tend to like things simply because they're familiar. Repetition builds trust, for good or bad.",
+  "Contrast effect: things are judged against what came just before. A $50 shirt looks cheap after a $300 jacket.",
+  "Hindsight bias: after the fact, outcomes feel obvious. Write predictions down to see how good your judgment really is.",
+  "Silence is powerful: many people rush to fill a pause and will often add more information if you just wait.",
+];
+
+function renderDaily() {
+  const now = new Date();
+  const day = Math.floor((now - now.getTimezoneOffset() * 60000) / 86400000);
+  const [q, by] = QUOTES[day % QUOTES.length];
+  document.getElementById("quote").textContent = `"${q}"`;
+  document.getElementById("quoteBy").textContent = `— ${by}`;
+  document.getElementById("tip").textContent = TIPS[day % TIPS.length];
+}
+
+// Clock (also redraws the calendar and daily text when the date rolls over)
 function tick() {
   const d = new Date();
   let h = d.getHours();
@@ -267,7 +342,7 @@ function tick() {
   document.getElementById("clock").innerHTML = `${h}:${m}<span class="ampm">${ampm}</span>`;
   document.getElementById("date").textContent =
     d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-  if (d.toDateString() !== shownToday) { shownToday = d.toDateString(); renderCal(); }
+  if (d.toDateString() !== shownToday) { shownToday = d.toDateString(); renderCal(); renderDaily(); }
 }
 tick();
 setInterval(tick, 1000);
