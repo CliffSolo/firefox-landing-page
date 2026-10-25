@@ -105,6 +105,8 @@
     aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px;
     border: 1px solid transparent; font-variant-numeric: tabular-nums;
   }
+  .cal-grid .day { cursor: pointer; transition: border-color .15s, color .15s; }
+  .cal-grid .day:hover { border-color: var(--pink-soft); color: var(--pink); }
   .cal-grid .day.other { color: #4a4f57; }
   .cal-grid .day.today {
     border-color: var(--pink); color: #fff; font-weight: 600;
@@ -126,6 +128,42 @@
     margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .1em;
     color: var(--cyan); font-weight: 600;
   }
+
+  /* Add-to-Google-Calendar dialog */
+  dialog {
+    border: 1px solid var(--pink); border-radius: 12px; background: var(--panel); color: var(--text);
+    padding: 22px; width: min(420px, calc(100vw - 32px));
+    box-shadow: 0 0 14px var(--pink-soft), 0 0 30px rgba(0, 0, 0, .6);
+  }
+  dialog::backdrop { background: rgba(0, 0, 0, .55); }
+  dialog h3 { margin: 0 0 4px; color: var(--pink); font-size: 17px; }
+  dialog .sub { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+  dialog label { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 4px; text-transform: uppercase; letter-spacing: .08em; }
+  dialog input[type=text], dialog input[type=time], dialog textarea {
+    width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--bg); color: var(--text); font: inherit; color-scheme: dark;
+  }
+  dialog input:focus, dialog textarea:focus { outline: none; border-color: var(--pink); }
+  dialog textarea { resize: vertical; min-height: 60px; }
+  .seg { display: flex; gap: 6px; }
+  .seg label {
+    flex: 1; margin: 0; text-align: center; padding: 7px; border: 1px solid var(--line);
+    border-radius: 8px; cursor: pointer; text-transform: none; letter-spacing: 0; font-size: 14px;
+  }
+  .seg input { display: none; }
+  .seg label:has(input:checked) { border-color: var(--pink); color: var(--pink); box-shadow: 0 0 8px var(--pink-soft); }
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; }
+  .check input { accent-color: var(--pink); }
+  .times { display: flex; gap: 10px; }
+  .times > div { flex: 1; }
+  .times.hidden { display: none; }
+  dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+  dialog .row button {
+    border: 1px solid var(--line); background: none; color: var(--text);
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 14px;
+  }
+  dialog .row button.primary { border-color: var(--pink); color: var(--pink); box-shadow: 0 0 8px var(--pink-soft); }
+  dialog .row button:hover { border-color: var(--pink); }
 
   /* Narrow windows: stack everything */
   @media (max-width: 900px) {
@@ -168,6 +206,30 @@
     <section class="box"><h2>ASAP</h2></section>
   </aside>
 </div>
+
+<dialog id="evDlg">
+  <form method="dialog" id="evForm">
+    <h3>Add to Google Calendar</h3>
+    <div class="sub" id="evDate"></div>
+    <div class="seg">
+      <label><input type="radio" name="kind" value="event" checked> Event</label>
+      <label><input type="radio" name="kind" value="task"> Task</label>
+    </div>
+    <label for="evTitle">Title</label>
+    <input type="text" id="evTitle" required autocomplete="off">
+    <div class="check"><input type="checkbox" id="evAllDay"><span>All day</span></div>
+    <div class="times" id="evTimes">
+      <div><label for="evStart">Start</label><input type="time" id="evStart" value="09:00"></div>
+      <div><label for="evEnd">End</label><input type="time" id="evEnd" value="10:00"></div>
+    </div>
+    <label for="evNotes">Notes</label>
+    <textarea id="evNotes"></textarea>
+    <div class="row">
+      <button value="cancel" formnovalidate>Cancel</button>
+      <button value="ok" class="primary">Open in Google Calendar</button>
+    </div>
+  </form>
+</dialog>
 
 <script>
 // Edit links here. Each group becomes a section in the left pane.
@@ -280,6 +342,8 @@ function renderCal() {
     if (d.getMonth() !== mo) el.classList.add("other");
     if (d.toDateString() === today.toDateString()) el.classList.add("today");
     el.textContent = d.getDate();
+    el.title = "Add to Google Calendar";
+    el.onclick = () => openEventDialog(d);
     grid.append(el);
   }
 }
@@ -287,6 +351,66 @@ function renderCal() {
 document.getElementById("prev").onclick = () => { view.setMonth(view.getMonth() - 1); renderCal(); };
 document.getElementById("next").onclick = () => { view.setMonth(view.getMonth() + 1); renderCal(); };
 document.getElementById("today").onclick = () => { view = new Date(); view.setDate(1); renderCal(); };
+
+// Click a date -> dialog -> opens Google Calendar's "new event" page, pre-filled.
+// Nothing is saved until you press Save on Google's page.
+const evDlg = document.getElementById("evDlg");
+const evAllDay = document.getElementById("evAllDay");
+const evStart = document.getElementById("evStart");
+const evEnd = document.getElementById("evEnd");
+let evDay = null;
+
+function openEventDialog(d) {
+  evDay = d;
+  document.getElementById("evForm").reset();
+  document.getElementById("evDate").textContent =
+    d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  syncKind();
+  evDlg.showModal();
+  document.getElementById("evTitle").focus();
+}
+
+// Tasks default to all day; events default to a time slot
+function syncKind() {
+  evAllDay.checked = evDlg.querySelector("input[name=kind]:checked").value === "task";
+  syncAllDay();
+}
+function syncAllDay() { document.getElementById("evTimes").classList.toggle("hidden", evAllDay.checked); }
+evDlg.querySelectorAll("input[name=kind]").forEach(r => r.onchange = syncKind);
+evAllDay.onchange = syncAllDay;
+
+// Keep the end one hour after the start when the start changes
+evStart.onchange = () => {
+  const [h, m] = evStart.value.split(":").map(Number);
+  evEnd.value = `${String((h + 1) % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+};
+
+const ymd = (d) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+
+evDlg.addEventListener("close", () => {
+  if (evDlg.returnValue !== "ok") return;
+  const isTask = evDlg.querySelector("input[name=kind]:checked").value === "task";
+  const title = document.getElementById("evTitle").value.trim();
+  let dates;
+  if (evAllDay.checked) {
+    const next = new Date(evDay.getFullYear(), evDay.getMonth(), evDay.getDate() + 1);
+    dates = `${ymd(evDay)}/${ymd(next)}`;
+  } else {
+    const t = (v) => v.replace(":", "") + "00";
+    // An end time earlier than the start runs past midnight into the next day
+    const endDay = evEnd.value <= evStart.value
+      ? new Date(evDay.getFullYear(), evDay.getMonth(), evDay.getDate() + 1) : evDay;
+    dates = `${ymd(evDay)}T${t(evStart.value)}/${ymd(endDay)}T${t(evEnd.value)}`;
+  }
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: isTask ? `Task: ${title}` : title,
+    dates,
+    details: document.getElementById("evNotes").value,
+    ctz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
+  window.open(`https://calendar.google.com/calendar/render?${params}`, "_blank", "noopener");
+});
 
 // Daily quote + psychology tip (a new one each day, cycling through the lists)
 const QUOTES = [

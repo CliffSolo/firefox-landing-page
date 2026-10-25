@@ -15,3 +15,4 @@
 - All link buttons (Expenses and Loans, Misc Sites, Last Visited too) now get the same blue glowing outline.
 - Larger quote and tip text (quote 16→21px, author 13→15px, tip 14→18px, label 11→13px); text area widened to 580px.
 - More space above the clock (top padding 4vh→7vh) and one extra blank line between the date and the quote.
+- Click any calendar date to open an "Add to Google Calendar" dialog (Event or Task, title, all day or start/end time, notes). It opens Google Calendar's new-event page in a new tab, pre-filled; you press Save there. Tasks are added as all-day events titled "Task: …".
