@@ -26,3 +26,5 @@
 - Fit everything on one screen again: calendar day cells 40px tall (were square), top padding 7vh→6vh; left pane scrollbar thin and dark instead of white.
 - Weather location set to Stoneham, MA (ZIP 02180).
 - Added a 5-day forecast row (next 5 days: day, icon, high/low; hover for conditions + rain chance) above today's weather, with a few blank lines between the clock/date and the forecast.
+- Added a "Restore Session" button above Bills Due This Month. It reopens the previous session after a restart, otherwise whatever was closed last (tabs or a window), like Ctrl+Shift+T. Works through `firefox/mozilla.cfg` (re-run `sudo firefox/install-newtab.sh` to install the update).
+- Clicking a day in the 5-day forecast opens the same "Add to Google Calendar" dialog for that date.
