@@ -142,21 +142,21 @@
     50% { box-shadow: 0 0 12px var(--pink-soft), 0 0 26px var(--pink-soft), inset 0 0 8px var(--pink-soft); }
   }
 
-  /* Right half: two outlined sections */
+  /* Right half: outlined sections, same blue outline + glow as the left pane buttons */
   .right { display: flex; flex-direction: column; gap: var(--gap); min-height: 0; }
   #restoreBtn {
     flex: none; padding: 11px 14px; border-radius: 10px; cursor: pointer;
-    background: var(--panel); color: var(--cyan); border: 1px solid var(--cyan);
+    background: var(--panel); color: var(--cyan); border: 1px solid var(--blue);
     font: inherit; font-weight: 600; letter-spacing: .04em;
-    box-shadow: 0 0 8px var(--cyan-soft), inset 0 0 4px var(--cyan-soft);
+    box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft);
     transition: box-shadow .15s;
   }
   #restoreBtn:hover, #restoreBtn:focus-visible {
-    outline: none; box-shadow: 0 0 14px var(--cyan-soft), 0 0 26px var(--cyan-soft), inset 0 0 6px var(--cyan-soft);
+    outline: none; box-shadow: 0 0 12px var(--blue-soft), 0 0 22px var(--blue-soft), inset 0 0 6px var(--blue-soft);
   }
   .box {
-    flex: 1; min-height: 0; border: 1px solid var(--cyan); border-radius: 12px;
-    padding: 16px 18px; box-shadow: 0 0 10px var(--cyan-soft) inset, 0 0 6px var(--cyan-soft);
+    flex: 1; min-height: 0; border: 1px solid var(--blue); border-radius: 12px;
+    padding: 16px 18px; box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft);
     overflow-y: auto;
   }
   .box-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
