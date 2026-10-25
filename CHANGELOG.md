@@ -13,3 +13,4 @@
 - Made the right pane (Bills Due This Month, ASAP) much thinner, the same width as the left pane, so the clock, quote and calendar sit in the center of the page.
 - Bank buttons now have a blue (`#7aa2f7`) glowing outline, styled like today's date on the calendar.
 - All link buttons (Expenses and Loans, Misc Sites, Last Visited too) now get the same blue glowing outline.
+- Larger quote and tip text (quote 16→21px, author 13→15px, tip 14→18px, label 11→13px); text area widened to 580px.
