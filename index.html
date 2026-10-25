@@ -15,6 +15,8 @@
     --cyan-soft: rgba(45, 226, 230, .35);
     --pink: #ff3caa;
     --pink-soft: rgba(255, 60, 170, .45);
+    --blue: #7aa2f7;
+    --blue-soft: rgba(122, 162, 247, .4);
     --gap: 20px;
   }
   * { box-sizing: border-box; }
@@ -49,6 +51,15 @@
   .btn-link:hover, .btn-link:focus-visible {
     border-color: var(--cyan); color: var(--cyan); outline: none;
     box-shadow: 0 0 10px var(--cyan-soft);
+  }
+  /* Banks: blue outline with a soft glow, like today's date on the calendar */
+  .group.banks .btn-link {
+    border-color: var(--blue);
+    box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft);
+  }
+  .group.banks .btn-link:hover, .group.banks .btn-link:focus-visible {
+    color: var(--blue);
+    box-shadow: 0 0 12px var(--blue-soft), 0 0 22px var(--blue-soft), inset 0 0 6px var(--blue-soft);
   }
   .btn-empty {
     padding: 10px 14px; border-radius: 8px; border: 1px dashed var(--line);
@@ -204,6 +215,7 @@ function renderLinks() {
   for (const g of groups) {
     const sec = document.createElement("section");
     sec.className = "group";
+    if (g.group === "Banks") sec.classList.add("banks");
     const h = document.createElement("h2");
     h.textContent = g.group;
     const list = document.createElement("div");
