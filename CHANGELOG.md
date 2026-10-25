@@ -10,3 +10,4 @@
 - Added "Misc Sites" favorites section (5 slots: 1–4 empty, 5 = GitHub).
 - Added "Last Visited" section: last 5 buttons clicked on the homepage, newest first (saved in Firefox local storage).
 - Added a daily inspirational quote and a psychology/behavior tip between the clock and the calendar (20 of each, built in; changes each day).
+- Made the right pane (Bills Due This Month, ASAP) much thinner, the same width as the left pane, so the clock, quote and calendar sit in the center of the page.

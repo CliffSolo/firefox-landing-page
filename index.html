@@ -24,10 +24,10 @@
     font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
 
-  /* Layout: left pane | center | right half */
+  /* Layout: left pane | center | right pane (side panes equal width so the center is centered) */
   .page {
     display: grid;
-    grid-template-columns: minmax(180px, 230px) 1fr 50%;
+    grid-template-columns: minmax(200px, 300px) 1fr minmax(200px, 300px);
     gap: var(--gap);
     height: 100vh;
     padding: var(--gap);
