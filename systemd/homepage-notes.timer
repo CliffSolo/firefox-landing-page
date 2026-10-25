@@ -1,0 +1,11 @@
+[Unit]
+Description=Firefox Landing Page: re-sync after midnight (new day's note) and at login
+
+[Timer]
+OnCalendar=*-*-* 00:01
+OnStartupSec=10
+Persistent=true
+Unit=homepage-notes.service
+
+[Install]
+WantedBy=timers.target

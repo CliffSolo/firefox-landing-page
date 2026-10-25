@@ -439,7 +439,7 @@ document.getElementById("next").onclick = () => { view.setMonth(view.getMonth() 
 document.getElementById("today").onclick = () => { view = new Date(); view.setDate(1); renderCal(); };
 
 // Right pane: Today's Note, ASAP, Bills (from notes.js, written by sync_notes.py)
-const NOTES = window.HOMEPAGE_NOTES || null;
+let NOTES = window.HOMEPAGE_NOTES || null;
 const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 // A bill is due on its fixed date, or on its day of the month (clamped to short months)
@@ -527,6 +527,19 @@ function renderNotes() {
     : "Run sync_notes.py to load your notes";
 }
 renderNotes();
+
+// Pick up new syncs while the page stays open: reload notes.js every minute
+setInterval(() => {
+  const s = document.createElement("script");
+  s.src = "notes.js?t=" + Date.now();
+  s.onload = () => {
+    s.remove();
+    const fresh = window.HOMEPAGE_NOTES;
+    if (fresh && (!NOTES || fresh.synced !== NOTES.synced)) { NOTES = fresh; renderNotes(); renderCal(); }
+  };
+  s.onerror = () => s.remove();
+  document.body.append(s);
+}, 60000);
 
 // Restore Session: firefox/mozilla.cfg watches for this URL and does the restore
 document.getElementById("restoreBtn").onclick = () => {

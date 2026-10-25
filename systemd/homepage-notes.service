@@ -1,0 +1,6 @@
+[Unit]
+Description=Firefox Landing Page: copy Obsidian notes (today, ASAP, bills) into notes.js
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/Projects/Homepage/sync_notes.py

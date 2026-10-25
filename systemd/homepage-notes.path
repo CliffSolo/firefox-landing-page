@@ -1,0 +1,11 @@
+[Unit]
+Description=Firefox Landing Page: re-sync when ASAP, Bills or a daily note changes
+
+[Path]
+# Vault root holds ASAP.md and Bills Due This Month.md
+PathChanged=%h/Documents/ScrapYard
+PathChanged=%h/Documents/ScrapYard/01 - Home/Daily Notes
+Unit=homepage-notes.service
+
+[Install]
+WantedBy=default.target

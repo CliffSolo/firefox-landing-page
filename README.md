@@ -10,7 +10,9 @@ Offline Firefox start page. Single file (`index.html`), no internet needed to lo
 - **Right pane:** Restore Session button (needs `firefox/mozilla.cfg` installed), then Today's Note, ASAP and Bills Due / Upcoming from the ScrapYard vault.
 
 ## Notes from Obsidian
-Run `./sync_notes.py` to copy today's daily note, `ASAP.md` and `Bills Due This Month.md` into `notes.js` (not committed). Only open tasks show for ASAP and Bills. Give a bill a due date with `📅 2026-11-03` or `due 15` (every month) to get a dot on the calendar.
+Run `./sync_notes.py` to copy today's daily note, `ASAP.md` and `Bills Due This Month.md` into `notes.js` (not committed). Only open tasks show for ASAP and Bills.
+
+Automatic: systemd user units in `~/.config/systemd/user/` re-run the sync when the vault root or `01 - Home/Daily Notes/` changes (`homepage-notes.path`), after midnight and at login (`homepage-notes.timer`). The open page re-reads `notes.js` every minute. Turn off with `systemctl --user disable --now homepage-notes.path homepage-notes.timer`. Give a bill a due date with `📅 2026-11-03` or `due 15` (every month) to get a dot on the calendar.
 
 ## Theme
 All dark. Base `#15171a`, panels `#1e2125`, borders `#2c3036`, text `#e7e9ec`. Accents: cyan `#2de2e6`, calendar pink `#ff3caa`. All colours are at the top of the `<style>` block.
