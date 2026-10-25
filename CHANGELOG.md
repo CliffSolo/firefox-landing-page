@@ -7,3 +7,5 @@
 - Replaced the earlier draft (search box, editable bookmarks, backup/restore).
 - Moved from `~/Homepage` to `~/Projects/Homepage`; Firefox startup page updated in `user.js`.
 - Link buttons now open in a new tab.
+- Added "Misc Sites" favorites section (5 slots: 1–4 empty, 5 = GitHub).
+- Added "Last Visited" section: last 5 buttons clicked on the homepage, newest first (saved in Firefox local storage).

@@ -50,6 +50,10 @@
     border-color: var(--cyan); color: var(--cyan); outline: none;
     box-shadow: 0 0 10px var(--cyan-soft);
   }
+  .btn-empty {
+    padding: 10px 14px; border-radius: 8px; border: 1px dashed var(--line);
+    color: #4a4f57; font-size: 13px;
+  }
 
   /* Center: clock + calendar */
   .center { display: flex; flex-direction: column; align-items: center; padding-top: 4vh; min-width: 0; }
@@ -148,29 +152,75 @@ const LINKS = [
   { group: "Expenses and Loans", items: [
     { name: "Navient Loans", url: "https://authenticate2.servicing.mohela.com/CALM2/login.do?command=showLoginPage" },
   ]},
+  // Favorites: null = empty slot
+  { group: "Misc Sites", items: [
+    null,
+    null,
+    null,
+    null,
+    { name: "GitHub", url: "https://github.com" },
+  ]},
 ];
+
+// Last Visited: the last 5 buttons clicked on this page, newest first
+const RECENT_KEY = "homepage.lastVisited";
+const RECENT_MAX = 5;
+
+function loadRecent() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch (e) { return []; }
+}
+
+function saveRecent(name, url) {
+  const list = [{ name, url }, ...loadRecent().filter(r => r.url !== url)].slice(0, RECENT_MAX);
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); } catch (e) {}
+}
 
 // Left pane
 const nav = document.getElementById("links");
-for (const g of LINKS) {
-  const sec = document.createElement("section");
-  sec.className = "group";
-  const h = document.createElement("h2");
-  h.textContent = g.group;
-  const list = document.createElement("div");
-  list.className = "buttons";
-  for (const l of g.items) {
-    const a = document.createElement("a");
-    a.className = "btn-link";
-    a.href = l.url;
-    a.textContent = l.name;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    list.append(a);
+
+function renderLinks() {
+  nav.innerHTML = "";
+  const recent = loadRecent();
+  const groups = [...LINKS, { group: "Last Visited", items: recent.length ? recent : [null] }];
+  for (const g of groups) {
+    const sec = document.createElement("section");
+    sec.className = "group";
+    const h = document.createElement("h2");
+    h.textContent = g.group;
+    const list = document.createElement("div");
+    list.className = "buttons";
+    for (const l of g.items) {
+      if (!l) {
+        const empty = document.createElement("div");
+        empty.className = "btn-empty";
+        empty.textContent = g.group === "Last Visited" ? "Nothing yet" : "Empty";
+        list.append(empty);
+        continue;
+      }
+      const a = document.createElement("a");
+      a.className = "btn-link";
+      a.href = l.url;
+      a.textContent = l.name;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      list.append(a);
+    }
+    sec.append(h, list);
+    nav.append(sec);
   }
-  sec.append(h, list);
-  nav.append(sec);
 }
+
+// Record clicks (including middle-click) and refresh Last Visited
+function onLinkClick(e) {
+  const a = e.target.closest(".btn-link");
+  if (!a) return;
+  saveRecent(a.textContent, a.href);
+  setTimeout(renderLinks, 0);
+}
+nav.addEventListener("click", onLinkClick);
+nav.addEventListener("auxclick", onLinkClick);
+
+renderLinks();
 
 // Calendar (weeks start on Sunday)
 let view = new Date(); view.setDate(1);
