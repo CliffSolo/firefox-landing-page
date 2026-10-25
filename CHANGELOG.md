@@ -25,3 +25,4 @@
 - Added bank button: Concora Credit (Milestone) → mymilestonecard.com.
 - Fit everything on one screen again: calendar day cells 40px tall (were square), top padding 7vh→6vh; left pane scrollbar thin and dark instead of white.
 - Weather location set to Stoneham, MA (ZIP 02180).
+- Added a 5-day forecast row (next 5 days: day, icon, high/low; hover for conditions + rain chance) above today's weather, with a few blank lines between the clock/date and the forecast.
