@@ -20,3 +20,4 @@
 - Added `firefox/` folder: `autoconfig.js` + `mozilla.cfg` + `install-newtab.sh` to make every new tab open the Homepage (Firefox autoconfig; needs sudo to install into /usr/lib/firefox, `--remove` to undo).
 - More horizontal space: gap between the panes 20→56px, page side padding 20→36px.
 - Even more: gap between the panes 56→96px, page side padding 36→60px.
+- Added bank buttons: Credit One (creditonebank.com, sign-in on home page) and Target Circle Card (target.com/mycirclecard).
