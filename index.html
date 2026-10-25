@@ -36,7 +36,10 @@
   }
 
   /* Left pane: link buttons */
-  .left { overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
+  .left {
+    overflow-y: auto; display: flex; flex-direction: column; gap: 24px;
+    scrollbar-width: thin; scrollbar-color: var(--line) transparent; padding-right: 6px;
+  }
   .group h2 {
     font-size: 12px; text-transform: uppercase; letter-spacing: .1em;
     color: var(--muted); margin: 0 0 10px; font-weight: 600;
@@ -68,13 +71,21 @@
   }
 
   /* Center: clock + calendar */
-  .center { display: flex; flex-direction: column; align-items: center; padding-top: 7vh; min-width: 0; }
+  .center { display: flex; flex-direction: column; align-items: center; padding-top: 6vh; min-width: 0; }
   #clock {
     font-size: clamp(56px, 7vw, 112px); font-weight: 200; letter-spacing: 2px;
     font-variant-numeric: tabular-nums; line-height: 1;
   }
   #clock .ampm { font-size: .35em; margin-left: .25em; color: var(--muted); letter-spacing: 1px; }
   #date { color: var(--muted); margin-top: 10px; font-size: 16px; }
+
+  /* Weather (under the date) */
+  .weather { display: flex; align-items: center; gap: 12px; margin-top: 16px; min-height: 40px; }
+  .weather .w-icon { font-size: 30px; line-height: 1; }
+  .weather .w-temp { font-size: 26px; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .weather .w-info { color: var(--muted); font-size: 14px; line-height: 1.35; text-align: left; }
+  .weather .w-info b { color: var(--text); font-weight: 500; }
+  .weather .w-stale { color: #6b6f76; font-size: 12px; }
 
   /* Daily quote + psychology tip */
   .daily { max-width: 580px; text-align: center; margin-top: calc(3vh + 1.5em); } /* + one blank line */
@@ -102,7 +113,7 @@
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
   .cal-grid .dow { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; padding-bottom: 6px; }
   .cal-grid .day {
-    aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px;
+    height: 40px; display: grid; place-items: center; border-radius: 8px;
     border: 1px solid transparent; font-variant-numeric: tabular-nums;
   }
   .cal-grid .day { cursor: pointer; user-select: none; transition: border-color .15s, color .15s; }
@@ -180,6 +191,7 @@
   <main class="center">
     <div id="clock">--:--</div>
     <div id="date"></div>
+    <div class="weather" id="weather"></div>
     <section class="daily">
       <div id="quote"></div>
       <div id="quoteBy"></div>
@@ -243,6 +255,7 @@ const LINKS = [
     { name: "Venmo", url: "https://venmo.com/account/sign-in" },
     { name: "Credit One", url: "https://www.creditonebank.com/" },
     { name: "Target Circle Card", url: "https://www.target.com/mycirclecard" },
+    { name: "Concora Credit (Milestone)", url: "https://www.mymilestonecard.com/" },
   ]},
   { group: "Expenses and Loans", items: [
     { name: "Navient Loans", url: "https://authenticate2.servicing.mohela.com/CALM2/login.do?command=showLoginPage" },
@@ -413,6 +426,64 @@ evDlg.addEventListener("close", () => {
   });
   window.open(`https://calendar.google.com/calendar/render?${params}`, "_blank", "noopener");
 });
+
+// Weather from Open-Meteo (free, no account). Set your location here.
+const WEATHER = { place: "", lat: null, lon: null };
+const WEATHER_KEY = "homepage.weather";
+const WEATHER_EVERY_MIN = 30;
+
+const WMO = { // weather code -> [icon, words]
+  0: ["☀️", "Clear"], 1: ["🌤️", "Mostly clear"], 2: ["⛅", "Partly cloudy"], 3: ["☁️", "Overcast"],
+  45: ["🌫️", "Fog"], 48: ["🌫️", "Freezing fog"],
+  51: ["🌦️", "Light drizzle"], 53: ["🌦️", "Drizzle"], 55: ["🌧️", "Heavy drizzle"],
+  56: ["🌧️", "Freezing drizzle"], 57: ["🌧️", "Freezing drizzle"],
+  61: ["🌦️", "Light rain"], 63: ["🌧️", "Rain"], 65: ["🌧️", "Heavy rain"],
+  66: ["🌧️", "Freezing rain"], 67: ["🌧️", "Freezing rain"],
+  71: ["🌨️", "Light snow"], 73: ["🌨️", "Snow"], 75: ["❄️", "Heavy snow"], 77: ["🌨️", "Snow grains"],
+  80: ["🌦️", "Rain showers"], 81: ["🌧️", "Rain showers"], 82: ["⛈️", "Heavy showers"],
+  85: ["🌨️", "Snow showers"], 86: ["❄️", "Heavy snow showers"],
+  95: ["⛈️", "Thunderstorm"], 96: ["⛈️", "Thunderstorm, hail"], 99: ["⛈️", "Thunderstorm, hail"],
+};
+
+function showWeather(w, stale) {
+  const box = document.getElementById("weather");
+  const [icon, words] = WMO[w.code] || ["🌡️", ""];
+  const age = stale ? `<div class="w-stale">offline · from ${new Date(w.time).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</div>` : "";
+  box.innerHTML =
+    `<span class="w-icon">${icon}</span><span class="w-temp">${Math.round(w.temp)}°</span>` +
+    `<div class="w-info"><b>${words}</b> · feels ${Math.round(w.feels)}°<br>` +
+    `H ${Math.round(w.hi)}° L ${Math.round(w.lo)}° · ${w.rain}% rain${WEATHER.place ? " · " + WEATHER.place : ""}${age}</div>`;
+}
+
+async function loadWeather() {
+  const box = document.getElementById("weather");
+  if (WEATHER.lat == null) { box.innerHTML = `<span class="w-info">Weather: location not set yet</span>`; return; }
+  let cached = null;
+  try { cached = JSON.parse(localStorage.getItem(WEATHER_KEY)); } catch (e) {}
+  if (cached) showWeather(cached, Date.now() - cached.time > WEATHER_EVERY_MIN * 60000 * 2);
+  try {
+    const url = "https://api.open-meteo.com/v1/forecast?" + new URLSearchParams({
+      latitude: WEATHER.lat, longitude: WEATHER.lon,
+      current: "temperature_2m,apparent_temperature,weather_code",
+      daily: "temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+      temperature_unit: "fahrenheit", timezone: "auto", forecast_days: 1,
+    });
+    const d = await (await fetch(url)).json();
+    const w = {
+      time: Date.now(), code: d.current.weather_code,
+      temp: d.current.temperature_2m, feels: d.current.apparent_temperature,
+      hi: d.daily.temperature_2m_max[0], lo: d.daily.temperature_2m_min[0],
+      rain: d.daily.precipitation_probability_max[0] ?? 0,
+    };
+    try { localStorage.setItem(WEATHER_KEY, JSON.stringify(w)); } catch (e) {}
+    showWeather(w, false);
+  } catch (e) {
+    if (cached) showWeather(cached, true);
+    else box.innerHTML = `<span class="w-info">Weather unavailable (offline?)</span>`;
+  }
+}
+loadWeather();
+setInterval(loadWeather, WEATHER_EVERY_MIN * 60000);
 
 // Daily quote + psychology tip (a new one each day, cycling through the lists)
 const QUOTES = [

@@ -21,3 +21,6 @@
 - More horizontal space: gap between the panes 20→56px, page side padding 20→36px.
 - Even more: gap between the panes 56→96px, page side padding 36→60px.
 - Added bank buttons: Credit One (creditonebank.com, sign-in on home page) and Target Circle Card (target.com/mycirclecard).
+- Added weather under the date (Open-Meteo, no account/key): icon, temp, conditions, feels-like, high/low, rain chance. Refreshes every 30 min; shows the last reading marked "offline" when there's no internet. Location set in `WEATHER` at the top of the weather code.
+- Added bank button: Concora Credit (Milestone) → mymilestonecard.com.
+- Fit everything on one screen again: calendar day cells 40px tall (were square), top padding 7vh→6vh; left pane scrollbar thin and dark instead of white.
