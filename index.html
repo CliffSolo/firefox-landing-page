@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home</title>
+<style>
+  :root {
+    --bg: #15171a;
+    --panel: #1e2125;
+    --line: #2c3036;
+    --text: #e7e9ec;
+    --muted: #9097a0;
+    --cyan: #2de2e6;
+    --cyan-soft: rgba(45, 226, 230, .35);
+    --pink: #ff3caa;
+    --pink-soft: rgba(255, 60, 170, .45);
+    --gap: 20px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  /* Layout: left pane | center | right half */
+  .page {
+    display: grid;
+    grid-template-columns: minmax(180px, 230px) 1fr 50%;
+    gap: var(--gap);
+    height: 100vh;
+    padding: var(--gap);
+  }
+
+  /* Left pane: link buttons */
+  .left { overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
+  .group h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); margin: 0 0 10px; font-weight: 600;
+  }
+  .buttons { display: flex; flex-direction: column; gap: 8px; }
+  .btn-link {
+    display: block; padding: 10px 14px; border-radius: 8px;
+    background: var(--panel); border: 1px solid var(--line);
+    color: var(--text); text-decoration: none; font-weight: 500;
+    transition: border-color .15s, box-shadow .15s, color .15s;
+  }
+  .btn-link:hover, .btn-link:focus-visible {
+    border-color: var(--cyan); color: var(--cyan); outline: none;
+    box-shadow: 0 0 10px var(--cyan-soft);
+  }
+
+  /* Center: clock + calendar */
+  .center { display: flex; flex-direction: column; align-items: center; padding-top: 4vh; min-width: 0; }
+  #clock {
+    font-size: clamp(56px, 7vw, 112px); font-weight: 200; letter-spacing: 2px;
+    font-variant-numeric: tabular-nums; line-height: 1;
+  }
+  #clock .ampm { font-size: .35em; margin-left: .25em; color: var(--muted); letter-spacing: 1px; }
+  #date { color: var(--muted); margin-top: 10px; font-size: 16px; }
+
+  .calendar {
+    margin-top: 5vh; width: 100%; max-width: 420px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px;
+  }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-title { color: var(--pink); font-weight: 600; font-size: 17px; letter-spacing: .03em; }
+  .cal-nav { display: flex; gap: 6px; }
+  .cal-nav button {
+    background: none; border: 1px solid var(--line); color: var(--muted);
+    border-radius: 6px; padding: 3px 10px; cursor: pointer; font: inherit; font-size: 13px;
+  }
+  .cal-nav button:hover { border-color: var(--pink); color: var(--pink); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+  .cal-grid .dow { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; padding-bottom: 6px; }
+  .cal-grid .day {
+    aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px;
+    border: 1px solid transparent; font-variant-numeric: tabular-nums;
+  }
+  .cal-grid .day.other { color: #4a4f57; }
+  .cal-grid .day.today {
+    border-color: var(--pink); color: #fff; font-weight: 600;
+    box-shadow: 0 0 8px var(--pink-soft), 0 0 18px var(--pink-soft), inset 0 0 6px var(--pink-soft);
+    animation: glow 3s ease-in-out infinite;
+  }
+  @keyframes glow {
+    50% { box-shadow: 0 0 12px var(--pink-soft), 0 0 26px var(--pink-soft), inset 0 0 8px var(--pink-soft); }
+  }
+
+  /* Right half: two outlined sections */
+  .right { display: flex; flex-direction: column; gap: var(--gap); min-height: 0; }
+  .box {
+    flex: 1; min-height: 0; border: 1px solid var(--cyan); border-radius: 12px;
+    padding: 16px 18px; box-shadow: 0 0 10px var(--cyan-soft) inset, 0 0 6px var(--cyan-soft);
+    overflow-y: auto;
+  }
+  .box h2 {
+    margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--cyan); font-weight: 600;
+  }
+
+  /* Narrow windows: stack everything */
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; height: auto; padding: 16px; }
+    .center { order: -1; }
+    .box { min-height: 200px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <nav class="left" id="links"></nav>
+
+  <main class="center">
+    <div id="clock">--:--</div>
+    <div id="date"></div>
+    <section class="calendar">
+      <div class="cal-head">
+        <div class="cal-title" id="calTitle"></div>
+        <div class="cal-nav">
+          <button id="prev" title="Previous month">◀</button>
+          <button id="today">Today</button>
+          <button id="next" title="Next month">▶</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </section>
+  </main>
+
+  <aside class="right">
+    <section class="box"><h2>Bills Due This Month</h2></section>
+    <section class="box"><h2>ASAP</h2></section>
+  </aside>
+</div>
+
+<script>
+// Edit links here. Each group becomes a section in the left pane.
+const LINKS = [
+  { group: "Banks", items: [
+    { name: "SoFi", url: "https://www.sofi.com/login/" },
+    { name: "Fidelity", url: "https://digital.fidelity.com/prgw/digital/login/full-page" },
+    { name: "Bank of America", url: "https://secure.bankofamerica.com/login/sign-in/signOnV2Screen.go" },
+    { name: "DCU", url: "https://www.dcu.org/" },
+    { name: "USAA", url: "https://www.usaa.com/my/logon" },
+    { name: "Venmo", url: "https://venmo.com/account/sign-in" },
+  ]},
+  { group: "Expenses and Loans", items: [
+    { name: "Navient Loans", url: "https://authenticate2.servicing.mohela.com/CALM2/login.do?command=showLoginPage" },
+  ]},
+];
+
+// Left pane
+const nav = document.getElementById("links");
+for (const g of LINKS) {
+  const sec = document.createElement("section");
+  sec.className = "group";
+  const h = document.createElement("h2");
+  h.textContent = g.group;
+  const list = document.createElement("div");
+  list.className = "buttons";
+  for (const l of g.items) {
+    const a = document.createElement("a");
+    a.className = "btn-link";
+    a.href = l.url;
+    a.textContent = l.name;
+    a.rel = "noopener noreferrer";
+    list.append(a);
+  }
+  sec.append(h, list);
+  nav.append(sec);
+}
+
+// Calendar (weeks start on Sunday)
+let view = new Date(); view.setDate(1);
+let shownToday = "";
+
+function renderCal() {
+  const grid = document.getElementById("calGrid");
+  const today = new Date();
+  const y = view.getFullYear(), mo = view.getMonth();
+  document.getElementById("calTitle").textContent =
+    view.toLocaleDateString([], { month: "long", year: "numeric" });
+
+  grid.innerHTML = "";
+  for (const d of ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]) {
+    const el = document.createElement("div");
+    el.className = "dow";
+    el.textContent = d;
+    grid.append(el);
+  }
+  const start = new Date(y, mo, 1 - new Date(y, mo, 1).getDay());
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    if (i === 35 && d.getMonth() !== mo) break; // skip a 6th row that's all next month
+    const el = document.createElement("div");
+    el.className = "day";
+    if (d.getMonth() !== mo) el.classList.add("other");
+    if (d.toDateString() === today.toDateString()) el.classList.add("today");
+    el.textContent = d.getDate();
+    grid.append(el);
+  }
+}
+
+document.getElementById("prev").onclick = () => { view.setMonth(view.getMonth() - 1); renderCal(); };
+document.getElementById("next").onclick = () => { view.setMonth(view.getMonth() + 1); renderCal(); };
+document.getElementById("today").onclick = () => { view = new Date(); view.setDate(1); renderCal(); };
+
+// Clock (also redraws the calendar when the date rolls over)
+function tick() {
+  const d = new Date();
+  let h = d.getHours();
+  const ampm = h < 12 ? "AM" : "PM";
+  h = h % 12 || 12;
+  const m = String(d.getMinutes()).padStart(2, "0");
+  document.getElementById("clock").innerHTML = `${h}:${m}<span class="ampm">${ampm}</span>`;
+  document.getElementById("date").textContent =
+    d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  if (d.toDateString() !== shownToday) { shownToday = d.toDateString(); renderCal(); }
+}
+tick();
+setInterval(tick, 1000);
+</script>
+</body>
+</html>
