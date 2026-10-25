@@ -105,7 +105,7 @@
     aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px;
     border: 1px solid transparent; font-variant-numeric: tabular-nums;
   }
-  .cal-grid .day { cursor: pointer; transition: border-color .15s, color .15s; }
+  .cal-grid .day { cursor: pointer; user-select: none; transition: border-color .15s, color .15s; }
   .cal-grid .day:hover { border-color: var(--pink-soft); color: var(--pink); }
   .cal-grid .day.other { color: #4a4f57; }
   .cal-grid .day.today {
