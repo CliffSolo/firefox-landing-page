@@ -17,3 +17,4 @@
 - More space above the clock (top padding 4vh→7vh) and one extra blank line between the date and the quote.
 - Click any calendar date to open an "Add to Google Calendar" dialog (Event or Task, title, all day or start/end time, notes). It opens Google Calendar's new-event page in a new tab, pre-filled; you press Save there. Tasks are added as all-day events titled "Task: …".
 - Calendar dates can no longer be text-selected (clicking/double-clicking a date was highlighting the number).
+- Added `firefox/` folder: `autoconfig.js` + `mozilla.cfg` + `install-newtab.sh` to make every new tab open the Homepage (Firefox autoconfig; needs sudo to install into /usr/lib/firefox, `--remove` to undo).

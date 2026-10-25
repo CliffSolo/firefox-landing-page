@@ -13,3 +13,5 @@ All dark. Base `#15171a`, panels `#1e2125`, borders `#2c3036`, text `#e7e9ec`. A
 
 ## Firefox
 Opens at startup and on the Home button via two lines in `~/.config/mozilla/firefox/e1fxaqv2.default-release/user.js`. Delete them to undo.
+
+New tabs: `sudo firefox/install-newtab.sh` copies `autoconfig.js` and `mozilla.cfg` into `/usr/lib/firefox` (Firefox autoconfig sets the new-tab URL). Undo with `sudo firefox/install-newtab.sh --remove`. Re-run if a Firefox update ever removes it.
