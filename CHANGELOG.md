@@ -28,3 +28,8 @@
 - Added a 5-day forecast row (next 5 days: day, icon, high/low; hover for conditions + rain chance) above today's weather, with a few blank lines between the clock/date and the forecast.
 - Added a "Restore Session" button above Bills Due This Month. It reopens the previous session after a restart, otherwise whatever was closed last (tabs or a window), like Ctrl+Shift+T. Works through `firefox/mozilla.cfg` (re-run `sudo firefox/install-newtab.sh` to install the update).
 - Clicking a day in the 5-day forecast opens the same "Add to Google Calendar" dialog for that date.
+- Right pane now: Restore Session, then Today's Note, ASAP, Bills Due / Upcoming (open tasks only, each with an "open ↗" link to the note in Obsidian) and a "Notes synced …" time.
+- Added `sync_notes.py`: reads today's daily note, `ASAP.md` and `Bills Due This Month.md` from the ScrapYard vault and writes `notes.js` (git-ignored; personal data stays out of the repo).
+- Bill dots on the calendar: a bill with `📅 YYYY-MM-DD` or `due 15` gets a cyan dot on that date (hover shows the bill), and a due label in the Bills box (pink when within 3 days).
+- Added a web search box (DuckDuckGo, opens in a new tab) at the top of the center column.
+- Each pane now fits the window and scrolls inside itself if needed; checkboxes drawn with CSS (the ☐ symbol was missing from the font).

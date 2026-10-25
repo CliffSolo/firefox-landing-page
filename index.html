@@ -30,6 +30,7 @@
   .page {
     display: grid;
     grid-template-columns: minmax(200px, 300px) 1fr minmax(200px, 300px);
+    grid-template-rows: minmax(0, 1fr); /* each pane fits the window and scrolls inside if needed */
     gap: var(--gap) 96px; /* rows | space between the panes */
     height: 100vh;
     padding: var(--gap) 60px;
@@ -71,7 +72,10 @@
   }
 
   /* Center: clock + calendar */
-  .center { display: flex; flex-direction: column; align-items: center; padding-top: 6vh; min-width: 0; }
+  .center {
+    display: flex; flex-direction: column; align-items: center; padding-top: 3vh; min-width: 0;
+    overflow-y: auto; scrollbar-width: none;
+  }
   #clock {
     font-size: clamp(56px, 7vw, 112px); font-weight: 200; letter-spacing: 2px;
     font-variant-numeric: tabular-nums; line-height: 1;
@@ -155,9 +159,42 @@
     padding: 16px 18px; box-shadow: 0 0 10px var(--cyan-soft) inset, 0 0 6px var(--cyan-soft);
     overflow-y: auto;
   }
+  .box-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
   .box h2 {
     margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .1em;
     color: var(--cyan); font-weight: 600;
+  }
+  .box-head a { color: var(--muted); font-size: 12px; text-decoration: none; white-space: nowrap; }
+  .box-head a:hover { color: var(--cyan); }
+  .note-list { list-style: none; margin: 0; padding: 0; font-size: 14px; line-height: 1.45; }
+  .note-list li { display: flex; gap: 8px; padding: 3px 0; }
+  .note-list li .mark {
+    flex: none; width: 13px; height: 13px; margin-top: 4px; border-radius: 3px;
+    border: 1.5px solid var(--cyan); box-shadow: 0 0 4px var(--cyan-soft);
+  }
+  .note-list li.done .mark { background: var(--cyan); opacity: .5; }
+  .note-list li.done { color: #6b6f76; text-decoration: line-through; }
+  .note-list li.heading { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; padding-top: 8px; }
+  .note-list li .due { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; padding-left: 8px; }
+  .note-list li .due.soon { color: var(--pink); }
+  .note-empty { color: #4a4f57; font-size: 13px; }
+  .synced { color: #4a4f57; font-size: 11px; margin-top: auto; flex: none; text-align: right; }
+
+  /* Web search (top of the center column) */
+  #search { width: 100%; max-width: 560px; margin-bottom: 3vh; flex: none; }
+  #search input {
+    width: 100%; padding: 11px 16px; font: inherit; font-size: 15px; border-radius: 10px;
+    background: var(--panel); color: var(--text); border: 1px solid var(--blue);
+    box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft); outline: none;
+  }
+  #search input:focus { box-shadow: 0 0 12px var(--blue-soft), 0 0 22px var(--blue-soft), inset 0 0 6px var(--blue-soft); }
+  #search input::placeholder { color: #6b6f76; }
+
+  /* Bill due dots on the calendar */
+  .cal-grid .day { position: relative; }
+  .cal-grid .day.bill::after {
+    content: ""; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 6px var(--cyan);
   }
 
   /* Add-to-Google-Calendar dialog */
@@ -209,6 +246,9 @@
   <nav class="left" id="links"></nav>
 
   <main class="center">
+    <form id="search" action="https://duckduckgo.com/" method="get" target="_blank" autocomplete="off">
+      <input name="q" placeholder="Search the web…" aria-label="Search the web" autofocus>
+    </form>
     <div id="clock">--:--</div>
     <div id="date"></div>
     <div class="forecast" id="forecast"></div>
@@ -236,8 +276,10 @@
 
   <aside class="right">
     <button id="restoreBtn" title="Reopen your last session, or what you just closed (same as Ctrl+Shift+T)">↺ Restore Session</button>
-    <section class="box"><h2>Bills Due This Month</h2></section>
-    <section class="box"><h2>ASAP</h2></section>
+    <section class="box" id="boxToday"></section>
+    <section class="box" id="boxAsap"></section>
+    <section class="box" id="boxBills"></section>
+    <div class="synced" id="synced"></div>
   </aside>
 </div>
 
@@ -265,6 +307,8 @@
   </form>
 </dialog>
 
+<!-- Written by sync_notes.py (today's note, ASAP, bills). Missing until the first sync. -->
+<script src="notes.js"></script>
 <script>
 // Edit links here. Each group becomes a section in the left pane.
 const LINKS = [
@@ -380,6 +424,11 @@ function renderCal() {
     if (d.toDateString() === today.toDateString()) el.classList.add("today");
     el.textContent = d.getDate();
     el.title = "Add to Google Calendar";
+    const due = billsOn(d);
+    if (due.length) {
+      el.classList.add("bill");
+      el.title = "Due: " + due.map(b => b.text).join(", ") + "\nClick to add to Google Calendar";
+    }
     el.onclick = () => openEventDialog(d);
     grid.append(el);
   }
@@ -388,6 +437,96 @@ function renderCal() {
 document.getElementById("prev").onclick = () => { view.setMonth(view.getMonth() - 1); renderCal(); };
 document.getElementById("next").onclick = () => { view.setMonth(view.getMonth() + 1); renderCal(); };
 document.getElementById("today").onclick = () => { view = new Date(); view.setDate(1); renderCal(); };
+
+// Right pane: Today's Note, ASAP, Bills (from notes.js, written by sync_notes.py)
+const NOTES = window.HOMEPAGE_NOTES || null;
+const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+// A bill is due on its fixed date, or on its day of the month (clamped to short months)
+function billsOn(d) {
+  if (!NOTES) return [];
+  const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  return NOTES.bills.items.filter(b =>
+    b.due === iso(d) || (b.dueDay && Math.min(b.dueDay, last) === d.getDate()));
+}
+
+function nextDue(b) {
+  if (b.due) return new Date(b.due + "T00:00");
+  if (!b.dueDay) return null;
+  const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  for (const add of [0, 1]) {
+    const last = new Date(today.getFullYear(), today.getMonth() + add + 1, 0).getDate();
+    const d = new Date(today.getFullYear(), today.getMonth() + add, Math.min(b.dueDay, last));
+    if (d >= today) return d;
+  }
+}
+
+function renderBox(id, title, section, emptyText) {
+  const box = document.getElementById(id);
+  box.innerHTML = "";
+  const head = document.createElement("div");
+  head.className = "box-head";
+  const h = document.createElement("h2");
+  h.textContent = title;
+  head.append(h);
+  if (section) {
+    const a = document.createElement("a");
+    a.href = section.link;
+    a.textContent = "open ↗";
+    a.title = "Open in Obsidian";
+    head.append(a);
+  }
+  box.append(head);
+
+  const items = section ? section.items : [];
+  if (!items.length) {
+    const p = document.createElement("div");
+    p.className = "note-empty";
+    p.textContent = section ? emptyText : "Not synced yet";
+    box.append(p);
+    return;
+  }
+  const ul = document.createElement("ul");
+  ul.className = "note-list";
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  for (const it of items) {
+    const li = document.createElement("li");
+    if (it.kind === "heading") { li.className = "heading"; li.textContent = it.text; ul.append(li); continue; }
+    if (it.kind === "task") {
+      const mark = document.createElement("span");
+      mark.className = "mark";
+      li.append(mark);
+      if (it.done) li.classList.add("done");
+    }
+    const t = document.createElement("span");
+    t.textContent = it.text;
+    li.append(t);
+    const due = nextDue(it);
+    if (due) {
+      const s = document.createElement("span");
+      const days = Math.round((due - today) / 86400000);
+      s.className = "due" + (days <= 3 ? " soon" : "");
+      s.textContent = days < 0 ? "overdue" : days === 0 ? "due today"
+        : "due " + due.toLocaleDateString([], { month: "short", day: "numeric" });
+      li.append(s);
+    }
+    ul.append(li);
+  }
+  box.append(ul);
+}
+
+function renderNotes() {
+  const isToday = NOTES && NOTES.today.date === iso(new Date());
+  renderBox("boxToday", "Today's Note", isToday ? NOTES.today : null,
+    NOTES && NOTES.today.exists ? "Nothing in today's note" : "No note for today yet");
+  if (NOTES && !isToday) document.querySelector("#boxToday .note-empty").textContent = "Not synced today yet";
+  renderBox("boxAsap", "ASAP", NOTES && NOTES.asap, "Nothing ASAP 🎉");
+  renderBox("boxBills", "Bills Due / Upcoming", NOTES && NOTES.bills, "No unpaid bills");
+  document.getElementById("synced").textContent = NOTES
+    ? "Notes synced " + new Date(NOTES.synced).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
+    : "Run sync_notes.py to load your notes";
+}
+renderNotes();
 
 // Restore Session: firefox/mozilla.cfg watches for this URL and does the restore
 document.getElementById("restoreBtn").onclick = () => {
