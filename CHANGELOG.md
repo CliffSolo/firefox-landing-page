@@ -24,3 +24,4 @@
 - Added weather under the date (Open-Meteo, no account/key): icon, temp, conditions, feels-like, high/low, rain chance. Refreshes every 30 min; shows the last reading marked "offline" when there's no internet. Location set in `WEATHER` at the top of the weather code.
 - Added bank button: Concora Credit (Milestone) → mymilestonecard.com.
 - Fit everything on one screen again: calendar day cells 40px tall (were square), top padding 7vh→6vh; left pane scrollbar thin and dark instead of white.
+- Weather location set to Stoneham, MA (ZIP 02180).
