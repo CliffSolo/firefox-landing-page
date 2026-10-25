@@ -6,3 +6,4 @@
 - All-dark theme based on the first screenshot in `ScrapYard/04 - Dev/Homepage/Theme Examples.md`; cyan + pink accents from the Omarchy/Tokyo Night examples.
 - Replaced the earlier draft (search box, editable bookmarks, backup/restore).
 - Moved from `~/Homepage` to `~/Projects/Homepage`; Firefox startup page updated in `user.js`.
+- Link buttons now open in a new tab.
