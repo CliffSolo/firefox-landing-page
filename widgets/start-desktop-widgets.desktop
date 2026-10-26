@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Start Desktop Widgets
+Comment=Opens desktopwidgets:// links from the Firefox Landing Page
+Exec=start-desktop-widgets %u
+MimeType=x-scheme-handler/desktopwidgets;
+NoDisplay=true
+Terminal=false

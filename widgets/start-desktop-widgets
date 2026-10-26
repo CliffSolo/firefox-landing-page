@@ -1,0 +1,18 @@
+#!/bin/bash
+# Start Desktop Widgets: the "Start desktop widgets" button on the Firefox Landing Page opens
+# desktopwidgets://start, which runs this script (see install.sh in this folder).
+# If the Omarchy shell is running with the widgets, bring them back on top (e.g. after the
+# Matrix Screens rain covered them). Otherwise restart the shell, which starts the widgets.
+
+shell="${OMARCHY_PATH:-/usr/share/omarchy}/shell"
+ok=1
+for widget in desktop-notes desktop-clock desktop-calendar; do
+  timeout 5 quickshell ipc -p "$shell" call "$widget" raise >/dev/null 2>&1 || ok=0
+done
+
+if [[ $ok == 1 ]]; then
+  notify-send -a "Desktop Widgets" "Desktop widgets" "Brought back on top" 2>/dev/null
+else
+  omarchy-restart-shell >/dev/null 2>&1
+  notify-send -a "Desktop Widgets" "Desktop widgets" "Started (shell restarted)" 2>/dev/null
+fi
