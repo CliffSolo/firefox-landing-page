@@ -36,3 +36,5 @@
 - Notes update automatically: systemd user units re-run `sync_notes.py` when ASAP, Bills or a daily note changes, after midnight and at login; the open page re-reads `notes.js` every minute.
 - Added `screenshot.png` (personal links and notes blanked out) to the top of the README.
 - Restore Session button and right pane boxes now use the same blue outline and glow as the left pane buttons (were cyan). Note checkboxes are blue too.
+- Font is now Ubuntu (bundled in `fonts/` so it works offline; Ubuntu Font Licence in `fonts/LICENSE.txt`).
+- Theme picker: dots at the bottom of the right pane switch the color scheme (Neon, Tokyo Night, Purple, Synthwave, Light). The choice is saved in the browser and applied before the page draws.
