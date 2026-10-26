@@ -38,3 +38,4 @@
 - Restore Session button and right pane boxes now use the same blue outline and glow as the left pane buttons (were cyan). Note checkboxes are blue too.
 - Font is now Ubuntu (bundled in `fonts/` so it works offline; Ubuntu Font Licence in `fonts/LICENSE.txt`).
 - Theme picker: dots at the bottom of the right pane switch the color scheme (Neon, Tokyo Night, Purple, Synthwave, Light). The choice is saved in the browser and applied before the page draws.
+- Fixed: the notes sync stopped after a burst of saves (a new daily note set off several runs in one second and systemd gave up). The service now has no start limit.

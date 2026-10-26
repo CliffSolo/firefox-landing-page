@@ -1,5 +1,7 @@
 [Unit]
 Description=Firefox Landing Page: copy Obsidian notes (today, ASAP, bills) into notes.js
+# Obsidian can write a note several times a second (e.g. a new daily note); never give up re-syncing
+StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
