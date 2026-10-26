@@ -40,3 +40,4 @@
 - Theme picker: dots at the bottom of the right pane switch the color scheme (Neon, Tokyo Night, Purple, Synthwave, Light). The choice is saved in the browser and applied before the page draws.
 - Fixed: the notes sync stopped after a burst of saves (a new daily note set off several runs in one second and systemd gave up). The service now has no start limit.
 - Added a "Start Desktop Widgets" button right under Restore Session. It opens `desktopwidgets://start`, handled on this computer by `widgets/start-desktop-widgets` (installed with `widgets/install.sh`, no sudo): brings the Omarchy desktop widgets back on top, or restarts the shell if they aren't running. Firefox asks once which app should open the link.
+- Added a "View Progress Log" button under Start Desktop Widgets. It opens the Daily Log (claude.ai artifact) in its own new tab, so the landing page stays open.

@@ -178,14 +178,15 @@
   /* Right half: outlined sections, same blue outline + glow as the left pane buttons */
   .right { display: flex; flex-direction: column; gap: var(--gap); min-height: 0; }
   .actions { flex: none; display: flex; flex-direction: column; gap: 8px; }
-  #restoreBtn, #widgetsBtn {
+  #restoreBtn, #widgetsBtn, #logBtn {
     flex: none; padding: 11px 14px; border-radius: 10px; cursor: pointer;
     background: var(--panel); color: var(--cyan); border: 1px solid var(--blue);
     font: inherit; font-weight: 600; letter-spacing: .04em;
     box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft);
     transition: box-shadow .15s;
   }
-  #restoreBtn:hover, #restoreBtn:focus-visible, #widgetsBtn:hover, #widgetsBtn:focus-visible {
+  #logBtn { display: block; text-align: center; text-decoration: none; }
+  #restoreBtn:hover, #restoreBtn:focus-visible, #widgetsBtn:hover, #widgetsBtn:focus-visible, #logBtn:hover, #logBtn:focus-visible {
     outline: none; box-shadow: 0 0 12px var(--blue-soft), 0 0 22px var(--blue-soft), inset 0 0 6px var(--blue-soft);
   }
   .box {
@@ -322,6 +323,7 @@
     <div class="actions">
       <button id="restoreBtn" title="Reopen your last session, or what you just closed (same as Ctrl+Shift+T)">↺ Restore Session</button>
       <button id="widgetsBtn" title="Start the desktop widgets, or bring them back on top (runs widgets/start-desktop-widgets on this computer)">▦ Start Desktop Widgets</button>
+      <a id="logBtn" href="https://claude.ai/artifact/5NiwirTcuF4Fh16rYi2NEx" target="_blank" rel="noopener" title="Open the Daily Log (what you worked on each day) in its own tab">📈 View Progress Log</a>
     </div>
     <section class="box" id="boxToday"></section>
     <section class="box" id="boxAsap"></section>
