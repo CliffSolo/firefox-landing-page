@@ -1,0 +1,4 @@
+#!/bin/bash
+# Omarchy theme-set hook: re-sync the Landing Page so "Match Desktop" picks up the new theme.
+# Install: cp omarchy/theme-set-homepage ~/.config/omarchy/hooks/theme-set.d/homepage
+python3 "$HOME/Projects/Homepage/sync_notes.py" >/dev/null 2>&1 &

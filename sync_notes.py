@@ -18,6 +18,8 @@ DAILY_DIR = VAULT / "01 - Home/Daily Notes"
 ASAP = VAULT / "ASAP.md"
 BILLS = VAULT / "Bills Due This Month.md"
 OUT = Path(__file__).resolve().parent / "notes.js"
+# Current Omarchy theme, for the page's "Match Desktop" theme
+DESKTOP_THEME = Path.home() / ".local/state/omarchy/current"
 
 TASK = re.compile(r"^\s*[-*] \[(.)\]\s*(.*)$")
 DATE = re.compile(r"📅\s*(\d{4}-\d{2}-\d{2})")
@@ -72,6 +74,18 @@ def obsidian_link(path):
     return "obsidian://open?" + "vault=ScrapYard&file=" + str(rel).replace(" ", "%20").replace("/", "%2F")
 
 
+def desktop_theme():
+    """Name and colors (background, foreground, accent, color0-15) of the current Omarchy theme."""
+    colors_file = DESKTOP_THEME / "theme/colors.toml"
+    name_file = DESKTOP_THEME / "theme.name"
+    colors = {}
+    if colors_file.exists():
+        for m in re.finditer(r'^\s*(\w+)\s*=\s*"(#[0-9a-fA-F]{6})"', colors_file.read_text(encoding="utf-8"), re.M):
+            colors[m.group(1)] = m.group(2)
+    name = name_file.read_text(encoding="utf-8").strip() if name_file.exists() else ""
+    return {"name": name.replace("-", " ").title(), "colors": colors}
+
+
 def main():
     today = dt.date.today()
     daily = DAILY_DIR / f"{today.isoformat()}.md"
@@ -88,6 +102,7 @@ def main():
             "link": obsidian_link(BILLS),
             "items": [bill_dates(i) for i in parse(read_lines(BILLS), open_tasks_only=True)],
         },
+        "desktop": desktop_theme(),
     }
     OUT.write_text("window.HOMEPAGE_NOTES = " + json.dumps(data, ensure_ascii=False, indent=1) + ";\n", encoding="utf-8")
     counts = f"today {len(data['today']['items'])}, ASAP {len(data['asap']['items'])}, bills {len(data['bills']['items'])}"

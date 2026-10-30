@@ -6,7 +6,13 @@
 <title>Home</title>
 <script>
   // Apply the saved theme before the page draws (no flash of the default colors)
-  try { document.documentElement.dataset.theme = localStorage.getItem("homepage-theme") || "neon"; } catch (e) {}
+  try {
+    const t = localStorage.getItem("homepage-theme") || "neon";
+    document.documentElement.dataset.theme = t;
+    // "Match Desktop": colors from the last sync of the Omarchy theme (see applyDesktopTheme below)
+    const d = t === "desktop" && JSON.parse(localStorage.getItem("homepage-desktop-vars"));
+    if (d) for (const k in d) document.documentElement.style.setProperty(k, d[k]);
+  } catch (e) {}
 </script>
 <style>
   /* Ubuntu font, bundled in fonts/ so the page works offline */
@@ -15,8 +21,10 @@
   @font-face { font-family: "Ubuntu"; font-weight: 400; font-style: italic; src: url(fonts/ubuntu-400-italic.woff2) format("woff2"); }
   @font-face { font-family: "Ubuntu"; font-weight: 500; src: url(fonts/ubuntu-500.woff2) format("woff2"); }
   @font-face { font-family: "Ubuntu"; font-weight: 600 700; src: url(fonts/ubuntu-700.woff2) format("woff2"); }
+  /* Pirata One (pirate lettering) for the Old Notebook theme */
+  @font-face { font-family: "Pirata One"; font-weight: 400; src: url(fonts/pirata-one-400.woff2) format("woff2"); }
 
-  /* Themes: pick one with the dots at the bottom of the right pane (saved in this browser).
+  /* Themes: pick one from the Theme menu under View Progress Log (saved in this browser).
      --blue = outlines, --cyan = headings, --pink = highlights (today, hover, dialog). */
   :root, [data-theme="neon"] {
     --bg: #15171a; --panel: #1e2125; --line: #2c3036;
@@ -46,6 +54,50 @@
     --cyan: #0a8796; --pink: #d61f7f; --blue: #3c63d6;
     --scheme: light;
   }
+  [data-theme="catppuccin"] { /* Catppuccin Mocha */
+    --bg: #1e1e2e; --panel: #181825; --line: #313244;
+    --text: #cdd6f4; --muted: #a6adc8; --dim: #7f849c; --faint: #585b70; --bright: #fff;
+    --cyan: #94e2d5; --pink: #f5c2e7; --blue: #89b4fa;
+  }
+  [data-theme="dracula"] {
+    --bg: #282a36; --panel: #21222c; --line: #44475a;
+    --text: #f8f8f2; --muted: #bfbfd0; --dim: #8a8fb0; --faint: #6272a4; --bright: #fff;
+    --cyan: #8be9fd; --pink: #ff79c6; --blue: #bd93f9;
+  }
+  [data-theme="atom"] { /* Atom One Dark */
+    --bg: #282c34; --panel: #21252b; --line: #3e4451;
+    --text: #abb2bf; --muted: #8b929e; --dim: #6b717d; --faint: #4b5263; --bright: #e6e9ef;
+    --cyan: #56b6c2; --pink: #e06c75; --blue: #61afef;
+  }
+  [data-theme="nord"] {
+    --bg: #2e3440; --panel: #3b4252; --line: #434c5e;
+    --text: #eceff4; --muted: #b6bdca; --dim: #8c95a6; --faint: #616e88; --bright: #fff;
+    --cyan: #88c0d0; --pink: #b48ead; --blue: #81a1c1;
+  }
+  [data-theme="gruvbox"] {
+    --bg: #282828; --panel: #32302f; --line: #504945;
+    --text: #ebdbb2; --muted: #bdae93; --dim: #928374; --faint: #665c54; --bright: #fbf1c7;
+    --cyan: #8ec07c; --pink: #fe8019; --blue: #83a598;
+  }
+  [data-theme="notebook"] { /* Old notebook: a slightly worn, unlined journal page, ink, pirate lettering */
+    --bg: #f8efcf; --panel: #fbf5df; --line: #d6c69a;
+    --text: #3a2914; --muted: #6a5332; --dim: #8d7650; --faint: #b8a57c; --bright: #1f1408;
+    --cyan: #8a2d1b; --pink: #a8321e; --blue: #7a6440;
+    --scheme: light;
+  }
+  [data-theme="notebook"] body {
+    font-family: "Pirata One", "Ubuntu", system-ui, sans-serif; font-size: 17px; letter-spacing: .02em;
+    /* light paper, a few faint age stains, edges darkened with wear (no lines) */
+    background:
+      radial-gradient(ellipse 38% 30% at 18% 22%, rgba(196, 160, 90, .10), transparent 70%),
+      radial-gradient(ellipse 30% 26% at 82% 70%, rgba(180, 140, 70, .09), transparent 70%),
+      radial-gradient(ellipse 22% 18% at 60% 12%, rgba(205, 175, 110, .08), transparent 70%),
+      radial-gradient(ellipse at center, #fbf4d9 0%, #f6ebc6 60%, #e9d8a6 100%);
+    background-attachment: fixed;
+  }
+  [data-theme="notebook"] input, [data-theme="notebook"] button, [data-theme="notebook"] select, [data-theme="notebook"] textarea { font-family: inherit; }
+  [data-theme="notebook"] .btn-link, [data-theme="notebook"] .box, [data-theme="notebook"] .calendar,
+  [data-theme="notebook"] #search input, [data-theme="notebook"] .forecast .f-day { background-color: rgba(250, 240, 205, .75); }
   :root {
     --cyan-soft: color-mix(in srgb, var(--cyan) 35%, transparent);
     --pink-soft: color-mix(in srgb, var(--pink) 45%, transparent);
@@ -106,7 +158,7 @@
 
   /* Center: clock + calendar */
   .center {
-    display: flex; flex-direction: column; align-items: center; padding-top: 3vh; min-width: 0;
+    display: flex; flex-direction: column; align-items: center; padding-top: 6vh; min-width: 0;
     overflow-y: auto; scrollbar-width: none;
   }
   #clock {
@@ -117,9 +169,9 @@
   #date { color: var(--muted); margin-top: 10px; font-size: 16px; }
 
   /* Weather (under the date) */
-  .forecast { display: flex; gap: 10px; margin-top: 44px; } /* a few blank lines under the date */
+  .forecast { display: flex; gap: 12px; margin-top: 28px; } /* 25% wider than before (68px days, 10px gaps) */
   .forecast .f-day {
-    width: 68px; padding: 6px 0; text-align: center; border: 1px solid var(--line);
+    width: 85px; padding: 6px 0; text-align: center; border: 1px solid var(--line);
     border-radius: 8px; background: var(--panel); font-size: 13px; line-height: 1.3;
     cursor: pointer; user-select: none; transition: border-color .15s, box-shadow .15s;
   }
@@ -213,10 +265,10 @@
   .note-list li .due { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; padding-left: 8px; }
   .note-list li .due.soon { color: var(--pink); }
   .note-empty { color: var(--faint); font-size: 13px; }
-  .synced { color: var(--faint); font-size: 11px; flex: none; text-align: right; }
+  .synced { color: var(--faint); font-size: 11px; flex: none; text-align: right; margin-top: auto; }
 
   /* Web search (top of the center column) */
-  #search { width: 100%; max-width: 560px; margin-bottom: 3vh; flex: none; }
+  #search { width: 100%; max-width: 560px; margin-top: 3vh; flex: none; }
   #search input {
     width: 100%; padding: 11px 16px; font: inherit; font-size: 15px; border-radius: 10px;
     background: var(--panel); color: var(--text); border: 1px solid var(--blue);
@@ -268,15 +320,17 @@
   dialog .row button.primary { border-color: var(--pink); color: var(--pink); box-shadow: 0 0 8px var(--pink-soft); }
   dialog .row button:hover { border-color: var(--pink); }
 
-  /* Theme picker (bottom of the right pane) */
-  .themes { margin-top: auto; display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex: none; }
-  .themes span { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; margin-right: 2px; }
-  .themes button {
-    width: 16px; height: 16px; border-radius: 50%; padding: 0; cursor: pointer;
-    border: 2px solid var(--line); background: var(--sw); transition: transform .15s, box-shadow .15s;
+  /* Theme menu (under View Progress Log) */
+  #themeSel {
+    appearance: none; width: 100%; padding: 11px 36px 11px 14px; border-radius: 10px; cursor: pointer;
+    background: var(--panel); color: var(--cyan); border: 1px solid var(--blue);
+    font: inherit; font-weight: 600; letter-spacing: .04em; text-align: center; text-align-last: center;
+    box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft); transition: box-shadow .15s;
+    background-image: linear-gradient(45deg, transparent 50%, var(--cyan) 50%), linear-gradient(135deg, var(--cyan) 50%, transparent 50%);
+    background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat;
   }
-  .themes button:hover { transform: scale(1.2); }
-  .themes button[aria-pressed="true"] { border-color: var(--text); box-shadow: 0 0 8px var(--sw); }
+  #themeSel:hover, #themeSel:focus-visible { outline: none; box-shadow: 0 0 12px var(--blue-soft), 0 0 22px var(--blue-soft), inset 0 0 6px var(--blue-soft); }
+  #themeSel option, #themeSel optgroup { background: var(--panel); color: var(--text); font-weight: 400; }
 
   /* Narrow windows: stack everything */
   @media (max-width: 900px) {
@@ -291,11 +345,11 @@
   <nav class="left" id="links"></nav>
 
   <main class="center">
-    <form id="search" action="https://duckduckgo.com/" method="get" target="_blank" autocomplete="off">
-      <input name="q" placeholder="Search the web…" aria-label="Search the web" autofocus>
-    </form>
     <div id="clock">--:--</div>
     <div id="date"></div>
+    <form id="search" action="https://claude.ai/new" method="get" target="_blank" autocomplete="off">
+      <input name="q" placeholder="Ask Claude…" aria-label="Ask Claude" autofocus>
+    </form>
     <div class="forecast" id="forecast"></div>
     <div class="weather" id="weather"></div>
     <section class="daily">
@@ -324,11 +378,11 @@
       <button id="restoreBtn" title="Reopen your last session, or what you just closed (same as Ctrl+Shift+T)">↺ Restore Session</button>
       <button id="widgetsBtn" title="Start the desktop widgets, or bring them back on top (runs widgets/start-desktop-widgets on this computer)">▦ Start Desktop Widgets</button>
       <a id="logBtn" href="https://claude.ai/artifact/5NiwirTcuF4Fh16rYi2NEx" target="_blank" rel="noopener" title="Open the Daily Log (what you worked on each day) in its own tab">View Progress Log</a>
+      <select id="themeSel" title="Color theme (saved in this browser)" aria-label="Color theme"></select>
     </div>
     <section class="box" id="boxToday"></section>
     <section class="box" id="boxAsap"></section>
     <section class="box" id="boxBills"></section>
-    <div class="themes" id="themes"><span>Theme</span></div>
     <div class="synced" id="synced"></div>
   </aside>
 </div>
@@ -585,7 +639,7 @@ setInterval(() => {
   s.onload = () => {
     s.remove();
     const fresh = window.HOMEPAGE_NOTES;
-    if (fresh && (!NOTES || fresh.synced !== NOTES.synced)) { NOTES = fresh; renderNotes(); renderCal(); }
+    if (fresh && (!NOTES || fresh.synced !== NOTES.synced)) { NOTES = fresh; renderNotes(); renderCal(); window.applyDesktopTheme && applyDesktopTheme(); }
   };
   s.onerror = () => s.remove();
   document.body.append(s);
@@ -812,32 +866,63 @@ tick();
 setInterval(tick, 1000);
 </script>
 <script>
-// Theme picker: one dot per theme, choice saved in this browser
+// Theme menu (under View Progress Log), choice saved in this browser.
+// "Match Desktop" uses the Omarchy theme colors that sync_notes.py copies into notes.js.
 const THEMES = [
-  { id: "neon", name: "Neon (blue · cyan · pink)", sw: "#7aa2f7" },
-  { id: "tokyo", name: "Tokyo Night", sw: "#7dcfff" },
-  { id: "purple", name: "Purple", sw: "#b48cff" },
-  { id: "synthwave", name: "Synthwave", sw: "#ff6ac1" },
-  { id: "light", name: "Light", sw: "#e9ecf2" },
+  { id: "desktop", name: "Match Desktop" },
+  { id: "neon", name: "Neon" },
+  { id: "tokyo", name: "Tokyo Night" },
+  { id: "catppuccin", name: "Catppuccin" },
+  { id: "dracula", name: "Dracula" },
+  { id: "atom", name: "Atom One Dark" },
+  { id: "nord", name: "Nord" },
+  { id: "gruvbox", name: "Gruvbox" },
+  { id: "purple", name: "Purple" },
+  { id: "synthwave", name: "Synthwave" },
+  { id: "light", name: "Light" },
+  { id: "notebook", name: "Old Notebook" },
 ];
-(function () {
-  const box = document.getElementById("themes");
+const DESKTOP_VARS = ["--bg", "--panel", "--line", "--text", "--muted", "--dim", "--faint", "--bright", "--cyan", "--pink", "--blue", "--scheme"];
+
+// Desktop colors -> page colors (accent = outlines, color6 = headings, color5 = highlights)
+function desktopVars(d) {
+  const c = d.colors, bg = c.background, fg = c.foreground;
+  const mix = (pct) => `color-mix(in srgb, ${fg} ${pct}%, ${bg})`;
+  const n = parseInt(bg.slice(1), 16), lum = (0.299 * (n >> 16) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255;
+  return {
+    "--bg": bg, "--panel": mix(6), "--line": mix(16), "--text": fg, "--muted": mix(62), "--dim": mix(45),
+    "--faint": mix(28), "--bright": fg, "--cyan": c.color6 || fg, "--pink": c.color5 || c.accent || fg,
+    "--blue": c.accent || c.color4 || fg, "--scheme": lum > 0.5 ? "light" : "dark",
+  };
+}
+
+function applyDesktopTheme() {
   const root = document.documentElement;
-  function paint() {
-    for (const b of box.querySelectorAll("button")) b.setAttribute("aria-pressed", b.dataset.id === (root.dataset.theme || "neon"));
+  for (const k of DESKTOP_VARS) root.style.removeProperty(k);
+  const d = NOTES && NOTES.desktop;
+  if (root.dataset.theme !== "desktop" || !d || !d.colors || !d.colors.background) return;
+  const vars = desktopVars(d);
+  for (const k in vars) root.style.setProperty(k, vars[k]);
+  try { localStorage.setItem("homepage-desktop-vars", JSON.stringify(vars)); } catch (e) {}
+}
+
+(function () {
+  const sel = document.getElementById("themeSel");
+  const root = document.documentElement;
+  function label() {
+    const name = NOTES && NOTES.desktop && NOTES.desktop.name;
+    sel.options[0].text = "Theme: Match Desktop" + (name ? ` (${name})` : "");
   }
-  for (const t of THEMES) {
-    const b = document.createElement("button");
-    b.dataset.id = t.id; b.title = t.name; b.setAttribute("aria-label", "Theme: " + t.name);
-    b.style.setProperty("--sw", t.sw);
-    b.onclick = () => {
-      root.dataset.theme = t.id;
-      try { localStorage.setItem("homepage-theme", t.id); } catch (e) {}
-      paint();
-    };
-    box.appendChild(b);
-  }
-  paint();
+  for (const t of THEMES) sel.add(new Option("Theme: " + t.name, t.id));
+  sel.value = THEMES.some(t => t.id === root.dataset.theme) ? root.dataset.theme : "neon";
+  label();
+  sel.onchange = () => {
+    root.dataset.theme = sel.value;
+    try { localStorage.setItem("homepage-theme", sel.value); } catch (e) {}
+    applyDesktopTheme();
+  };
+  applyDesktopTheme();
+  setInterval(label, 60000);
 })();
 </script>
 </body>
