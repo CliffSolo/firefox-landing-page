@@ -25,7 +25,7 @@ Offline Firefox start page. Single file (`index.html`), no internet needed to lo
 
 ## Layout
 - **Left pane:** link buttons by group (Banks, Expenses and Loans). Edit the `LINKS` list at the top of the script in `index.html`.
-- **Center:** large 12-hour digital clock and date, then an **Ask Claude** box (opens claude.ai in a new tab with your question filled in), the 5-day forecast and today's weather, the daily quote and tip, and a month calendar (today glows; ◀ ▶ and Today buttons).
+- **Center:** large 12-hour digital clock and date, then an **Ask Claude** box (opens claude.ai in a new tab with your question filled in), the 5-day forecast and today's weather, a random quote (new each time the page opens; the small ↻ shows another) and the daily psychology tip, and a month calendar (today glows; ◀ ▶ and Today buttons).
 - **Right pane:** Restore Session (needs `firefox/mozilla.cfg` installed), Start Desktop Widgets, View Progress Log and the **Theme** menu, then Today's Note, ASAP and Bills Due / Upcoming from the ScrapYard vault.
 
 ## Notes from Obsidian

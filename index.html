@@ -190,6 +190,14 @@
   .daily { max-width: 580px; text-align: center; margin-top: calc(3vh + 1.5em); } /* + one blank line */
   #quote { font-style: italic; font-size: 21px; line-height: 1.5; }
   #quoteBy { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  /* Small new-quote button after the author */
+  #quoteNew {
+    background: none; border: none; padding: 0 4px; margin-left: 6px; cursor: pointer;
+    color: var(--dim); font: inherit; font-size: 14px; line-height: 1; opacity: .55;
+    transition: opacity .15s, color .15s, transform .4s; vertical-align: 1px;
+  }
+  #quoteNew:hover, #quoteNew:focus-visible { opacity: 1; color: var(--cyan); outline: none; }
+  #quoteNew.spin { transform: rotate(360deg); transition: transform .4s; }
   .tip { margin-top: 3em; } /* the two blank lines */
   .tip-label {
     color: var(--cyan); font-size: 13px; text-transform: uppercase;
@@ -354,7 +362,7 @@
     <div class="weather" id="weather"></div>
     <section class="daily">
       <div id="quote"></div>
-      <div id="quoteBy"></div>
+      <div><span id="quoteBy"></span><button id="quoteNew" title="New quote" aria-label="New quote">↻</button></div>
       <div class="tip">
         <div class="tip-label">Psychology tip</div>
         <div id="tip"></div>
@@ -794,7 +802,7 @@ document.getElementById("forecast").addEventListener("click", (e) => {
   openEventDialog(new Date(y, m - 1, d));
 });
 
-// Daily quote + psychology tip (a new one each day, cycling through the lists)
+// Quote: a random one each time the page opens, ↻ for another. Psychology tip: a new one each day.
 const QUOTES = [
   ["The impediment to action advances action. What stands in the way becomes the way.", "Marcus Aurelius"],
   ["Waste no more time arguing what a good man should be. Be one.", "Marcus Aurelius"],
@@ -844,11 +852,26 @@ const TIPS = [
 function renderDaily() {
   const now = new Date();
   const day = Math.floor((now - now.getTimezoneOffset() * 60000) / 86400000);
-  const [q, by] = QUOTES[day % QUOTES.length];
+  document.getElementById("tip").textContent = TIPS[day % TIPS.length];
+  if (!document.getElementById("quote").textContent) newQuote();
+}
+
+// Random quote, never the same as the one shown last (remembered across pages)
+function newQuote() {
+  let last = -1;
+  try { last = +localStorage.getItem("homepage-quote"); } catch (e) {}
+  let i = Math.floor(Math.random() * QUOTES.length);
+  if (QUOTES.length > 1 && i === last) i = (i + 1 + Math.floor(Math.random() * (QUOTES.length - 1))) % QUOTES.length;
+  try { localStorage.setItem("homepage-quote", i); } catch (e) {}
+  const [q, by] = QUOTES[i];
   document.getElementById("quote").textContent = `"${q}"`;
   document.getElementById("quoteBy").textContent = `— ${by}`;
-  document.getElementById("tip").textContent = TIPS[day % TIPS.length];
 }
+document.getElementById("quoteNew").onclick = (e) => {
+  newQuote();
+  const b = e.currentTarget;
+  b.classList.remove("spin"); void b.offsetWidth; b.classList.add("spin");
+};
 
 // Clock (also redraws the calendar and daily text when the date rolls over)
 function tick() {

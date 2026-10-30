@@ -48,3 +48,5 @@
 - Theme menu (dropdown) under View Progress Log replaces the theme dots. New themes: Match Desktop, Catppuccin, Dracula, Atom One Dark, Nord, Gruvbox and Old Notebook (a light, slightly worn unlined journal page with Pirata One lettering bundled in `fonts/` under the SIL Open Font License).
 - `sync_notes.py` also saves the current Omarchy theme name and colors into `notes.js` for Match Desktop. Optional `omarchy/theme-set-homepage` hook re-syncs as soon as the desktop theme changes.
 - README: added status table, Open it and Files sections, and a Themes section.
+- Quote: a new random quote every time the page opens (never the same one twice in a row), plus a small ↻ button after the author for another quote. The psychology tip still changes once a day.
+- Drive copy now also in `Development/Firefox Landing Page/`.
