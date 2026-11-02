@@ -50,3 +50,6 @@
 - README: added status table, Open it and Files sections, and a Themes section.
 - Quote: a new random quote every time the page opens (never the same one twice in a row), plus a small ↻ button after the author for another quote. The psychology tip still changes once a day.
 - Drive copy now also in `Development/Firefox Landing Page/`.
+
+## 2026-11-02
+- Added `themes/` folder: every saved look in one place (v1 Neon Blue, v2 Atom One Dark from the other PC), with a README. Drive mirror: Dev/Apps/12 - Firefox Landing Page/Themes/.

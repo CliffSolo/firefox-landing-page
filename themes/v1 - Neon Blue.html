@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home (Neon Blue)</title>
+<script>
+  // Apply the saved theme before the page draws (no flash of the default colors)
+  try {
+    const t = localStorage.getItem("homepage-theme") || "neon";
+    document.documentElement.dataset.theme = t;
+    // "Match Desktop": colors from the last sync of the Omarchy theme (see applyDesktopTheme below)
+    const d = t === "desktop" && JSON.parse(localStorage.getItem("homepage-desktop-vars"));
+    if (d) for (const k in d) document.documentElement.style.setProperty(k, d[k]);
+  } catch (e) {}
+</script>
+<style>
+  /* Ubuntu font, bundled in fonts/ so the page works offline */
+  @font-face { font-family: "Ubuntu"; font-weight: 300; src: url(fonts/ubuntu-300.woff2) format("woff2"); }
+  @font-face { font-family: "Ubuntu"; font-weight: 400; src: url(fonts/ubuntu-400.woff2) format("woff2"); }
+  @font-face { font-family: "Ubuntu"; font-weight: 400; font-style: italic; src: url(fonts/ubuntu-400-italic.woff2) format("woff2"); }
+  @font-face { font-family: "Ubuntu"; font-weight: 500; src: url(fonts/ubuntu-500.woff2) format("woff2"); }
+  @font-face { font-family: "Ubuntu"; font-weight: 600 700; src: url(fonts/ubuntu-700.woff2) format("woff2"); }
+  /* Pirata One (pirate lettering) for the Old Notebook theme */
+  @font-face { font-family: "Pirata One"; font-weight: 400; src: url(fonts/pirata-one-400.woff2) format("woff2"); }
+
+  /* Themes: pick one from the Theme menu under View Progress Log (saved in this browser).
+     --blue = outlines, --cyan = headings, --pink = highlights (today, hover, dialog). */
+  :root, [data-theme="neon"] {
+    --bg: #15171a; --panel: #1e2125; --line: #2c3036;
+    --text: #e7e9ec; --muted: #9097a0; --dim: #6b6f76; --faint: #4a4f57; --bright: #fff;
+    --cyan: #2de2e6; --pink: #ff3caa; --blue: #7aa2f7;
+    --scheme: dark;
+    --gap: 20px;
+  }
+  [data-theme="tokyo"] {
+    --bg: #1a1b26; --panel: #1f2335; --line: #2f3549;
+    --text: #c0caf5; --muted: #8189b0; --dim: #636a8f; --faint: #444b6a; --bright: #fff;
+    --cyan: #7dcfff; --pink: #ff007c; --blue: #7aa2f7;
+  }
+  [data-theme="purple"] {
+    --bg: #16141f; --panel: #1e1b2b; --line: #2e2a40;
+    --text: #e6e1f5; --muted: #9a92b3; --dim: #716a88; --faint: #4d4762; --bright: #fff;
+    --cyan: #2de2e6; --pink: #ff3caa; --blue: #b48cff;
+  }
+  [data-theme="synthwave"] {
+    --bg: #130f21; --panel: #1b1631; --line: #2e2650;
+    --text: #f0e9ff; --muted: #a294c8; --dim: #776a9c; --faint: #4f4672; --bright: #fff;
+    --cyan: #36f9f6; --pink: #fede5d; --blue: #ff6ac1;
+  }
+  [data-theme="light"] {
+    --bg: #f3f4f7; --panel: #ffffff; --line: #d6dae2;
+    --text: #1d2128; --muted: #5b6372; --dim: #858c98; --faint: #b0b5bf; --bright: #000;
+    --cyan: #0a8796; --pink: #d61f7f; --blue: #3c63d6;
+    --scheme: light;
+  }
+  [data-theme="catppuccin"] { /* Catppuccin Mocha */
+    --bg: #1e1e2e; --panel: #181825; --line: #313244;
+    --text: #cdd6f4; --muted: #a6adc8; --dim: #7f849c; --faint: #585b70; --bright: #fff;
+    --cyan: #94e2d5; --pink: #f5c2e7; --blue: #89b4fa;
+  }
+  [data-theme="dracula"] {
+    --bg: #282a36; --panel: #21222c; --line: #44475a;
+    --text: #f8f8f2; --muted: #bfbfd0; --dim: #8a8fb0; --faint: #6272a4; --bright: #fff;
+    --cyan: #8be9fd; --pink: #ff79c6; --blue: #bd93f9;
+  }
+  [data-theme="atom"] { /* Atom One Dark */
+    --bg: #282c34; --panel: #21252b; --line: #3e4451;
+    --text: #abb2bf; --muted: #8b929e; --dim: #6b717d; --faint: #4b5263; --bright: #e6e9ef;
+    --cyan: #56b6c2; --pink: #e06c75; --blue: #61afef;
+  }
+  [data-theme="nord"] {
+    --bg: #2e3440; --panel: #3b4252; --line: #434c5e;
+    --text: #eceff4; --muted: #b6bdca; --dim: #8c95a6; --faint: #616e88; --bright: #fff;
+    --cyan: #88c0d0; --pink: #b48ead; --blue: #81a1c1;
+  }
+  [data-theme="gruvbox"] {
+    --bg: #282828; --panel: #32302f; --line: #504945;
+    --text: #ebdbb2; --muted: #bdae93; --dim: #928374; --faint: #665c54; --bright: #fbf1c7;
+    --cyan: #8ec07c; --pink: #fe8019; --blue: #83a598;
+  }
+  [data-theme="notebook"] { /* Old notebook: a slightly worn, unlined journal page, ink, pirate lettering */
+    --bg: #f8efcf; --panel: #fbf5df; --line: #d6c69a;
+    --text: #3a2914; --muted: #6a5332; --dim: #8d7650; --faint: #b8a57c; --bright: #1f1408;
+    --cyan: #8a2d1b; --pink: #a8321e; --blue: #7a6440;
+    --scheme: light;
+  }
+  [data-theme="notebook"] body {
+    font-family: "Pirata One", "Ubuntu", system-ui, sans-serif; font-size: 17px; letter-spacing: .02em;
+    /* light paper, a few faint age stains, edges darkened with wear (no lines) */
+    background:
+      radial-gradient(ellipse 38% 30% at 18% 22%, rgba(196, 160, 90, .10), transparent 70%),
+      radial-gradient(ellipse 30% 26% at 82% 70%, rgba(180, 140, 70, .09), transparent 70%),
+      radial-gradient(ellipse 22% 18% at 60% 12%, rgba(205, 175, 110, .08), transparent 70%),
+      radial-gradient(ellipse at center, #fbf4d9 0%, #f6ebc6 60%, #e9d8a6 100%);
+    background-attachment: fixed;
+  }
+  [data-theme="notebook"] input, [data-theme="notebook"] button, [data-theme="notebook"] select, [data-theme="notebook"] textarea { font-family: inherit; }
+  [data-theme="notebook"] .btn-link, [data-theme="notebook"] .box, [data-theme="notebook"] .calendar,
+  [data-theme="notebook"] #search input, [data-theme="notebook"] .forecast .f-day { background-color: rgba(250, 240, 205, .75); }
+  :root {
+    --cyan-soft: color-mix(in srgb, var(--cyan) 35%, transparent);
+    --pink-soft: color-mix(in srgb, var(--pink) 45%, transparent);
+    --blue-soft: color-mix(in srgb, var(--blue) 40%, transparent);
+    color-scheme: var(--scheme, dark);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.4 "Ubuntu", system-ui, sans-serif;
+  }
+
+  /* Layout: left pane | center | right pane (side panes equal width so the center is centered) */
+  .page {
+    display: grid;
+    grid-template-columns: minmax(200px, 300px) 1fr minmax(200px, 300px);
+    grid-template-rows: minmax(0, 1fr); /* each pane fits the window and scrolls inside if needed */
+    gap: var(--gap) 96px; /* rows | space between the panes */
+    height: 100vh;
+    padding: var(--gap) 60px;
+  }
+
+  /* Left pane: link buttons */
+  .left {
+    overflow-y: auto; display: flex; flex-direction: column; gap: 24px;
+    scrollbar-width: thin; scrollbar-color: var(--line) transparent; padding-right: 6px;
+  }
+  .group h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); margin: 0 0 10px; font-weight: 600;
+  }
+  .buttons { display: flex; flex-direction: column; gap: 8px; }
+  .btn-link {
+    display: block; padding: 10px 14px; border-radius: 8px;
+    background: var(--panel); border: 1px solid var(--line);
+    color: var(--text); text-decoration: none; font-weight: 500;
+    transition: border-color .15s, box-shadow .15s, color .15s;
+  }
+  .btn-link:hover, .btn-link:focus-visible {
+    border-color: var(--cyan); color: var(--cyan); outline: none;
+    box-shadow: 0 0 10px var(--cyan-soft);
+  }
+  /* All link buttons: blue outline with a soft glow, like today's date on the calendar */
+  .btn-link {
+    border-color: var(--blue);
+    box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft);
+  }
+  .btn-link:hover, .btn-link:focus-visible {
+    border-color: var(--blue);
+    color: var(--blue);
+    box-shadow: 0 0 12px var(--blue-soft), 0 0 22px var(--blue-soft), inset 0 0 6px var(--blue-soft);
+  }
+  .btn-empty {
+    padding: 10px 14px; border-radius: 8px; border: 1px dashed var(--line);
+    color: var(--faint); font-size: 13px;
+  }
+
+  /* Center: clock + calendar */
+  .center {
+    display: flex; flex-direction: column; align-items: center; padding-top: 6vh; min-width: 0;
+    overflow-y: auto; scrollbar-width: none;
+  }
+  #clock {
+    font-size: clamp(56px, 7vw, 112px); font-weight: 300; letter-spacing: 2px;
+    font-variant-numeric: tabular-nums; line-height: 1;
+  }
+  #clock .ampm { font-size: .35em; margin-left: .25em; color: var(--muted); letter-spacing: 1px; }
+  #date { color: var(--muted); margin-top: 10px; font-size: 16px; }
+
+  /* Weather (under the date) */
+  .forecast { display: flex; gap: 12px; margin-top: 28px; } /* 25% wider than before (68px days, 10px gaps) */
+  .forecast .f-day {
+    width: 85px; padding: 6px 0; text-align: center; border: 1px solid var(--line);
+    border-radius: 8px; background: var(--panel); font-size: 13px; line-height: 1.3;
+    cursor: pointer; user-select: none; transition: border-color .15s, box-shadow .15s;
+  }
+  .forecast .f-day:hover { border-color: var(--pink); box-shadow: 0 0 10px var(--pink-soft); }
+  .forecast .f-name { color: var(--cyan); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+  .forecast .f-icon { font-size: 20px; margin: 2px 0; }
+  .forecast .f-lo { color: var(--muted); }
+  .weather { display: flex; align-items: center; gap: 12px; margin-top: 14px; min-height: 40px; }
+  .weather .w-icon { font-size: 30px; line-height: 1; }
+  .weather .w-temp { font-size: 26px; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .weather .w-info { color: var(--muted); font-size: 14px; line-height: 1.35; text-align: left; }
+  .weather .w-info b { color: var(--text); font-weight: 500; }
+  .weather .w-stale { color: var(--dim); font-size: 12px; }
+
+  /* Daily quote + psychology tip */
+  .daily { max-width: 580px; text-align: center; margin-top: calc(3vh + 1.5em); } /* + one blank line */
+  #quote { font-style: italic; font-size: 21px; line-height: 1.5; }
+  #quoteBy { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  /* Small new-quote button after the author */
+  #quoteNew {
+    background: none; border: none; padding: 0 4px; margin-left: 6px; cursor: pointer;
+    color: var(--dim); font: inherit; font-size: 14px; line-height: 1; opacity: .55;
+    transition: opacity .15s, color .15s, transform .4s; vertical-align: 1px;
+  }
+  #quoteNew:hover, #quoteNew:focus-visible { opacity: 1; color: var(--cyan); outline: none; }
+  #quoteNew.spin { transform: rotate(360deg); transition: transform .4s; }
+  .tip { margin-top: 3em; } /* the two blank lines */
+  .tip-label {
+    color: var(--cyan); font-size: 13px; text-transform: uppercase;
+    letter-spacing: .1em; font-weight: 600; margin-bottom: 6px;
+  }
+  #tip { color: var(--muted); font-size: 18px; line-height: 1.5; }
+
+  .calendar {
+    margin-top: 4vh; width: 100%; max-width: 420px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px;
+  }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-title { color: var(--pink); font-weight: 600; font-size: 17px; letter-spacing: .03em; }
+  .cal-nav { display: flex; gap: 6px; }
+  .cal-nav button {
+    background: none; border: 1px solid var(--line); color: var(--muted);
+    border-radius: 6px; padding: 3px 10px; cursor: pointer; font: inherit; font-size: 13px;
+  }
+  .cal-nav button:hover { border-color: var(--pink); color: var(--pink); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+  .cal-grid .dow { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; padding-bottom: 6px; }
+  .cal-grid .day {
+    height: 40px; display: grid; place-items: center; border-radius: 8px;
+    border: 1px solid transparent; font-variant-numeric: tabular-nums;
+  }
+  .cal-grid .day { cursor: pointer; user-select: none; transition: border-color .15s, color .15s; }
+  .cal-grid .day:hover { border-color: var(--pink-soft); color: var(--pink); }
+  .cal-grid .day.other { color: var(--faint); }
+  .cal-grid .day.today {
+    border-color: var(--pink); color: var(--bright); font-weight: 600;
+    box-shadow: 0 0 8px var(--pink-soft), 0 0 18px var(--pink-soft), inset 0 0 6px var(--pink-soft);
+    animation: glow 3s ease-in-out infinite;
+  }
+  @keyframes glow {
+    50% { box-shadow: 0 0 12px var(--pink-soft), 0 0 26px var(--pink-soft), inset 0 0 8px var(--pink-soft); }
+  }
+
+  /* Right half: outlined sections, same blue outline + glow as the left pane buttons */
+  .right { display: flex; flex-direction: column; gap: var(--gap); min-height: 0; }
+  .actions { flex: none; display: flex; flex-direction: column; gap: 8px; }
+  #restoreBtn, #widgetsBtn, #logBtn {
+    flex: none; padding: 11px 14px; border-radius: 10px; cursor: pointer;
+    background: var(--panel); color: var(--cyan); border: 1px solid var(--blue);
+    font: inherit; font-weight: 600; letter-spacing: .04em;
+    box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft);
+    transition: box-shadow .15s;
+  }
+  #logBtn { display: block; text-align: center; text-decoration: none; }
+  #restoreBtn:hover, #restoreBtn:focus-visible, #widgetsBtn:hover, #widgetsBtn:focus-visible, #logBtn:hover, #logBtn:focus-visible {
+    outline: none; box-shadow: 0 0 12px var(--blue-soft), 0 0 22px var(--blue-soft), inset 0 0 6px var(--blue-soft);
+  }
+  .box {
+    flex: 1; min-height: 0; border: 1px solid var(--blue); border-radius: 12px;
+    padding: 16px 18px; box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft);
+    overflow-y: auto;
+  }
+  .box-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+  .box h2 {
+    margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--cyan); font-weight: 600;
+  }
+  .box-head a { color: var(--muted); font-size: 12px; text-decoration: none; white-space: nowrap; }
+  .box-head a:hover { color: var(--cyan); }
+  .note-list { list-style: none; margin: 0; padding: 0; font-size: 14px; line-height: 1.45; }
+  .note-list li { display: flex; gap: 8px; padding: 3px 0; }
+  .note-list li .mark {
+    flex: none; width: 13px; height: 13px; margin-top: 4px; border-radius: 3px;
+    border: 1.5px solid var(--blue); box-shadow: 0 0 4px var(--blue-soft);
+  }
+  .note-list li.done .mark { background: var(--blue); opacity: .5; }
+  .note-list li.done { color: var(--dim); text-decoration: line-through; }
+  .note-list li.heading { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; padding-top: 8px; }
+  .note-list li .due { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; padding-left: 8px; }
+  .note-list li .due.soon { color: var(--pink); }
+  .note-empty { color: var(--faint); font-size: 13px; }
+  .synced { color: var(--faint); font-size: 11px; flex: none; text-align: right; margin-top: auto; }
+
+  /* Web search (top of the center column) */
+  #search { width: 100%; max-width: 560px; margin-top: 3vh; flex: none; }
+  #search input {
+    width: 100%; padding: 11px 16px; font: inherit; font-size: 15px; border-radius: 10px;
+    background: var(--panel); color: var(--text); border: 1px solid var(--blue);
+    box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft); outline: none;
+  }
+  #search input:focus { box-shadow: 0 0 12px var(--blue-soft), 0 0 22px var(--blue-soft), inset 0 0 6px var(--blue-soft); }
+  #search input::placeholder { color: var(--dim); }
+
+  /* Bill due dots on the calendar */
+  .cal-grid .day { position: relative; }
+  .cal-grid .day.bill::after {
+    content: ""; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 6px var(--cyan);
+  }
+
+  /* Add-to-Google-Calendar dialog */
+  dialog {
+    border: 1px solid var(--pink); border-radius: 12px; background: var(--panel); color: var(--text);
+    padding: 22px; width: min(420px, calc(100vw - 32px));
+    box-shadow: 0 0 14px var(--pink-soft), 0 0 30px rgba(0, 0, 0, .6);
+  }
+  dialog::backdrop { background: rgba(0, 0, 0, .55); }
+  dialog h3 { margin: 0 0 4px; color: var(--pink); font-size: 17px; }
+  dialog .sub { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+  dialog label { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 4px; text-transform: uppercase; letter-spacing: .08em; }
+  dialog input[type=text], dialog input[type=time], dialog textarea {
+    width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--bg); color: var(--text); font: inherit; color-scheme: var(--scheme, dark);
+  }
+  dialog input:focus, dialog textarea:focus { outline: none; border-color: var(--pink); }
+  dialog textarea { resize: vertical; min-height: 60px; }
+  .seg { display: flex; gap: 6px; }
+  .seg label {
+    flex: 1; margin: 0; text-align: center; padding: 7px; border: 1px solid var(--line);
+    border-radius: 8px; cursor: pointer; text-transform: none; letter-spacing: 0; font-size: 14px;
+  }
+  .seg input { display: none; }
+  .seg label:has(input:checked) { border-color: var(--pink); color: var(--pink); box-shadow: 0 0 8px var(--pink-soft); }
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; }
+  .check input { accent-color: var(--pink); }
+  .times { display: flex; gap: 10px; }
+  .times > div { flex: 1; }
+  .times.hidden { display: none; }
+  dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+  dialog .row button {
+    border: 1px solid var(--line); background: none; color: var(--text);
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 14px;
+  }
+  dialog .row button.primary { border-color: var(--pink); color: var(--pink); box-shadow: 0 0 8px var(--pink-soft); }
+  dialog .row button:hover { border-color: var(--pink); }
+
+  /* Theme menu (under View Progress Log) */
+  #themeSel, #versionSel {
+    appearance: none; width: 100%; padding: 11px 36px 11px 14px; border-radius: 10px; cursor: pointer;
+    background: var(--panel); color: var(--cyan); border: 1px solid var(--blue);
+    font: inherit; font-weight: 600; letter-spacing: .04em; text-align: center; text-align-last: center;
+    box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft); transition: box-shadow .15s;
+    background-image: linear-gradient(45deg, transparent 50%, var(--cyan) 50%), linear-gradient(135deg, var(--cyan) 50%, transparent 50%);
+    background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat;
+  }
+  #themeSel:hover, #themeSel:focus-visible, #versionSel:hover, #versionSel:focus-visible { outline: none; box-shadow: 0 0 12px var(--blue-soft), 0 0 22px var(--blue-soft), inset 0 0 6px var(--blue-soft); }
+  #themeSel option, #themeSel optgroup, #versionSel option { background: var(--panel); color: var(--text); font-weight: 400; }
+
+  /* Narrow windows: stack everything */
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; height: auto; padding: 16px; }
+    .center { order: -1; }
+    .box { min-height: 200px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <nav class="left" id="links"></nav>
+
+  <main class="center">
+    <div id="clock">--:--</div>
+    <div id="date"></div>
+    <form id="search" action="https://claude.ai/new" method="get" target="_blank" autocomplete="off">
+      <input name="q" placeholder="Ask Claude…" aria-label="Ask Claude" autofocus>
+    </form>
+    <div class="forecast" id="forecast"></div>
+    <div class="weather" id="weather"></div>
+    <section class="daily">
+      <div id="quote"></div>
+      <div><span id="quoteBy"></span><button id="quoteNew" title="New quote" aria-label="New quote">↻</button></div>
+      <div class="tip">
+        <div class="tip-label">Psychology tip</div>
+        <div id="tip"></div>
+      </div>
+    </section>
+    <section class="calendar">
+      <div class="cal-head">
+        <div class="cal-title" id="calTitle"></div>
+        <div class="cal-nav">
+          <button id="prev" title="Previous month">◀</button>
+          <button id="today">Today</button>
+          <button id="next" title="Next month">▶</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </section>
+  </main>
+
+  <aside class="right">
+    <div class="actions">
+      <button id="restoreBtn" title="Reopen your last session, or what you just closed (same as Ctrl+Shift+T)">↺ Restore Session</button>
+      <button id="widgetsBtn" title="Start the desktop widgets, or bring them back on top (runs widgets/start-desktop-widgets on this computer)">▦ Start Desktop Widgets</button>
+      <a id="logBtn" href="https://claude.ai/artifact/5NiwirTcuF4Fh16rYi2NEx" target="_blank" rel="noopener" title="Open the Daily Log (what you worked on each day) in its own tab">View Progress Log</a>
+      <select id="themeSel" title="Color theme (saved in this browser)" aria-label="Color theme"></select>
+      <select id="versionSel" title="Page version (stays the default until you pick another)" aria-label="Page version"></select>
+    </div>
+    <section class="box" id="boxToday"></section>
+    <section class="box" id="boxAsap"></section>
+    <section class="box" id="boxBills"></section>
+    <div class="synced" id="synced"></div>
+  </aside>
+</div>
+
+<dialog id="evDlg">
+  <form method="dialog" id="evForm">
+    <h3>Add to Google Calendar</h3>
+    <div class="sub" id="evDate"></div>
+    <div class="seg">
+      <label><input type="radio" name="kind" value="event" checked> Event</label>
+      <label><input type="radio" name="kind" value="task"> Task</label>
+    </div>
+    <label for="evTitle">Title</label>
+    <input type="text" id="evTitle" required autocomplete="off">
+    <div class="check"><input type="checkbox" id="evAllDay"><span>All day</span></div>
+    <div class="times" id="evTimes">
+      <div><label for="evStart">Start</label><input type="time" id="evStart" value="09:00"></div>
+      <div><label for="evEnd">End</label><input type="time" id="evEnd" value="10:00"></div>
+    </div>
+    <label for="evNotes">Notes</label>
+    <textarea id="evNotes"></textarea>
+    <div class="row">
+      <button value="cancel" formnovalidate>Cancel</button>
+      <button value="ok" class="primary">Open in Google Calendar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Written by sync_notes.py (today's note, ASAP, bills). Missing until the first sync. -->
+<script src="notes.js"></script>
+<script>
+// Edit links here. Each group becomes a section in the left pane.
+const LINKS = [
+  { group: "Banks", items: [
+    { name: "SoFi", url: "https://www.sofi.com/login/" },
+    { name: "Fidelity", url: "https://digital.fidelity.com/prgw/digital/login/full-page" },
+    { name: "Bank of America", url: "https://secure.bankofamerica.com/login/sign-in/signOnV2Screen.go" },
+    { name: "DCU", url: "https://www.dcu.org/" },
+    { name: "USAA", url: "https://www.usaa.com/my/logon" },
+    { name: "Venmo", url: "https://venmo.com/account/sign-in" },
+    { name: "Credit One", url: "https://www.creditonebank.com/" },
+    { name: "Target Circle Card", url: "https://www.target.com/mycirclecard" },
+    { name: "Concora Credit (Milestone)", url: "https://www.mymilestonecard.com/" },
+  ]},
+  { group: "Expenses and Loans", items: [
+    { name: "Navient Loans", url: "https://authenticate2.servicing.mohela.com/CALM2/login.do?command=showLoginPage" },
+  ]},
+  // Favorites: null = empty slot
+  { group: "Misc Sites", items: [
+    null,
+    null,
+    null,
+    null,
+    { name: "GitHub", url: "https://github.com" },
+  ]},
+];
+
+// Last Visited: the last 5 buttons clicked on this page, newest first
+const RECENT_KEY = "homepage.lastVisited";
+const RECENT_MAX = 5;
+
+function loadRecent() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch (e) { return []; }
+}
+
+function saveRecent(name, url) {
+  const list = [{ name, url }, ...loadRecent().filter(r => r.url !== url)].slice(0, RECENT_MAX);
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); } catch (e) {}
+}
+
+// Left pane
+const nav = document.getElementById("links");
+
+function renderLinks() {
+  nav.innerHTML = "";
+  const recent = loadRecent();
+  const groups = [...LINKS, { group: "Last Visited", items: recent.length ? recent : [null] }];
+  for (const g of groups) {
+    const sec = document.createElement("section");
+    sec.className = "group";
+    const h = document.createElement("h2");
+    h.textContent = g.group;
+    const list = document.createElement("div");
+    list.className = "buttons";
+    for (const l of g.items) {
+      if (!l) {
+        const empty = document.createElement("div");
+        empty.className = "btn-empty";
+        empty.textContent = g.group === "Last Visited" ? "Nothing yet" : "Empty";
+        list.append(empty);
+        continue;
+      }
+      const a = document.createElement("a");
+      a.className = "btn-link";
+      a.href = l.url;
+      a.textContent = l.name;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      list.append(a);
+    }
+    sec.append(h, list);
+    nav.append(sec);
+  }
+}
+
+// Record clicks (including middle-click) and refresh Last Visited
+function onLinkClick(e) {
+  const a = e.target.closest(".btn-link");
+  if (!a) return;
+  saveRecent(a.textContent, a.href);
+  setTimeout(renderLinks, 0);
+}
+nav.addEventListener("click", onLinkClick);
+nav.addEventListener("auxclick", onLinkClick);
+
+renderLinks();
+
+// Calendar (weeks start on Sunday)
+let view = new Date(); view.setDate(1);
+let shownToday = "";
+
+function renderCal() {
+  const grid = document.getElementById("calGrid");
+  const today = new Date();
+  const y = view.getFullYear(), mo = view.getMonth();
+  document.getElementById("calTitle").textContent =
+    view.toLocaleDateString([], { month: "long", year: "numeric" });
+
+  grid.innerHTML = "";
+  for (const d of ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]) {
+    const el = document.createElement("div");
+    el.className = "dow";
+    el.textContent = d;
+    grid.append(el);
+  }
+  const start = new Date(y, mo, 1 - new Date(y, mo, 1).getDay());
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    if (i === 35 && d.getMonth() !== mo) break; // skip a 6th row that's all next month
+    const el = document.createElement("div");
+    el.className = "day";
+    if (d.getMonth() !== mo) el.classList.add("other");
+    if (d.toDateString() === today.toDateString()) el.classList.add("today");
+    el.textContent = d.getDate();
+    el.title = "Add to Google Calendar";
+    const due = billsOn(d);
+    if (due.length) {
+      el.classList.add("bill");
+      el.title = "Due: " + due.map(b => b.text).join(", ") + "\nClick to add to Google Calendar";
+    }
+    el.onclick = () => openEventDialog(d);
+    grid.append(el);
+  }
+}
+
+document.getElementById("prev").onclick = () => { view.setMonth(view.getMonth() - 1); renderCal(); };
+document.getElementById("next").onclick = () => { view.setMonth(view.getMonth() + 1); renderCal(); };
+document.getElementById("today").onclick = () => { view = new Date(); view.setDate(1); renderCal(); };
+
+// Right pane: Today's Note, ASAP, Bills (from notes.js, written by sync_notes.py)
+let NOTES = window.HOMEPAGE_NOTES || null;
+const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+// A bill is due on its fixed date, or on its day of the month (clamped to short months)
+function billsOn(d) {
+  if (!NOTES) return [];
+  const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  return NOTES.bills.items.filter(b =>
+    b.due === iso(d) || (b.dueDay && Math.min(b.dueDay, last) === d.getDate()));
+}
+
+function nextDue(b) {
+  if (b.due) return new Date(b.due + "T00:00");
+  if (!b.dueDay) return null;
+  const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  for (const add of [0, 1]) {
+    const last = new Date(today.getFullYear(), today.getMonth() + add + 1, 0).getDate();
+    const d = new Date(today.getFullYear(), today.getMonth() + add, Math.min(b.dueDay, last));
+    if (d >= today) return d;
+  }
+}
+
+function renderBox(id, title, section, emptyText) {
+  const box = document.getElementById(id);
+  box.innerHTML = "";
+  const head = document.createElement("div");
+  head.className = "box-head";
+  const h = document.createElement("h2");
+  h.textContent = title;
+  head.append(h);
+  if (section) {
+    const a = document.createElement("a");
+    a.href = section.link;
+    a.textContent = "open ↗";
+    a.title = "Open in Obsidian";
+    head.append(a);
+  }
+  box.append(head);
+
+  const items = section ? section.items : [];
+  if (!items.length) {
+    const p = document.createElement("div");
+    p.className = "note-empty";
+    p.textContent = section ? emptyText : "Not synced yet";
+    box.append(p);
+    return;
+  }
+  const ul = document.createElement("ul");
+  ul.className = "note-list";
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  for (const it of items) {
+    const li = document.createElement("li");
+    if (it.kind === "heading") { li.className = "heading"; li.textContent = it.text; ul.append(li); continue; }
+    if (it.kind === "task") {
+      const mark = document.createElement("span");
+      mark.className = "mark";
+      li.append(mark);
+      if (it.done) li.classList.add("done");
+    }
+    const t = document.createElement("span");
+    t.textContent = it.text;
+    li.append(t);
+    const due = nextDue(it);
+    if (due) {
+      const s = document.createElement("span");
+      const days = Math.round((due - today) / 86400000);
+      s.className = "due" + (days <= 3 ? " soon" : "");
+      s.textContent = days < 0 ? "overdue" : days === 0 ? "due today"
+        : "due " + due.toLocaleDateString([], { month: "short", day: "numeric" });
+      li.append(s);
+    }
+    ul.append(li);
+  }
+  box.append(ul);
+}
+
+function renderNotes() {
+  const isToday = NOTES && NOTES.today.date === iso(new Date());
+  renderBox("boxToday", "Today's Note", isToday ? NOTES.today : null,
+    NOTES && NOTES.today.exists ? "Nothing in today's note" : "No note for today yet");
+  if (NOTES && !isToday) document.querySelector("#boxToday .note-empty").textContent = "Not synced today yet";
+  renderBox("boxAsap", "ASAP", NOTES && NOTES.asap, "Nothing ASAP 🎉");
+  renderBox("boxBills", "Bills Due / Upcoming", NOTES && NOTES.bills, "No unpaid bills");
+  document.getElementById("synced").textContent = NOTES
+    ? "Notes synced " + new Date(NOTES.synced).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
+    : "Run sync_notes.py to load your notes";
+}
+renderNotes();
+
+// Pick up new syncs while the page stays open: reload notes.js every minute
+setInterval(() => {
+  const s = document.createElement("script");
+  s.src = "notes.js?t=" + Date.now();
+  s.onload = () => {
+    s.remove();
+    const fresh = window.HOMEPAGE_NOTES;
+    if (fresh && (!NOTES || fresh.synced !== NOTES.synced)) { NOTES = fresh; renderNotes(); renderCal(); window.applyDesktopTheme && applyDesktopTheme(); }
+  };
+  s.onerror = () => s.remove();
+  document.body.append(s);
+}, 60000);
+
+// Restore Session: firefox/mozilla.cfg watches for this URL and does the restore
+document.getElementById("restoreBtn").onclick = () => {
+  location.hash = "restore-session";
+  setTimeout(() => history.replaceState(null, "", location.pathname), 500);
+};
+
+// Start Desktop Widgets: desktopwidgets:// is handled by widgets/start-desktop-widgets on this
+// computer (installed by widgets/install.sh). Firefox asks once which app opens it.
+document.getElementById("widgetsBtn").onclick = () => { location.href = "desktopwidgets://start"; };
+
+// Click a date -> dialog -> opens Google Calendar's "new event" page, pre-filled.
+// Nothing is saved until you press Save on Google's page.
+const evDlg = document.getElementById("evDlg");
+const evAllDay = document.getElementById("evAllDay");
+const evStart = document.getElementById("evStart");
+const evEnd = document.getElementById("evEnd");
+let evDay = null;
+
+function openEventDialog(d) {
+  evDay = d;
+  document.getElementById("evForm").reset();
+  document.getElementById("evDate").textContent =
+    d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  syncKind();
+  evDlg.showModal();
+  document.getElementById("evTitle").focus();
+}
+
+// Tasks default to all day; events default to a time slot
+function syncKind() {
+  evAllDay.checked = evDlg.querySelector("input[name=kind]:checked").value === "task";
+  syncAllDay();
+}
+function syncAllDay() { document.getElementById("evTimes").classList.toggle("hidden", evAllDay.checked); }
+evDlg.querySelectorAll("input[name=kind]").forEach(r => r.onchange = syncKind);
+evAllDay.onchange = syncAllDay;
+
+// Keep the end one hour after the start when the start changes
+evStart.onchange = () => {
+  const [h, m] = evStart.value.split(":").map(Number);
+  evEnd.value = `${String((h + 1) % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+};
+
+const ymd = (d) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+
+evDlg.addEventListener("close", () => {
+  if (evDlg.returnValue !== "ok") return;
+  const isTask = evDlg.querySelector("input[name=kind]:checked").value === "task";
+  const title = document.getElementById("evTitle").value.trim();
+  let dates;
+  if (evAllDay.checked) {
+    const next = new Date(evDay.getFullYear(), evDay.getMonth(), evDay.getDate() + 1);
+    dates = `${ymd(evDay)}/${ymd(next)}`;
+  } else {
+    const t = (v) => v.replace(":", "") + "00";
+    // An end time earlier than the start runs past midnight into the next day
+    const endDay = evEnd.value <= evStart.value
+      ? new Date(evDay.getFullYear(), evDay.getMonth(), evDay.getDate() + 1) : evDay;
+    dates = `${ymd(evDay)}T${t(evStart.value)}/${ymd(endDay)}T${t(evEnd.value)}`;
+  }
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: isTask ? `Task: ${title}` : title,
+    dates,
+    details: document.getElementById("evNotes").value,
+    ctz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
+  window.open(`https://calendar.google.com/calendar/render?${params}`, "_blank", "noopener");
+});
+
+// Weather from Open-Meteo (free, no account). Set your location here.
+const WEATHER = { place: "Stoneham, MA", lat: 42.4801, lon: -71.0995 }; // ZIP 02180
+const WEATHER_KEY = "homepage.weather";
+const WEATHER_EVERY_MIN = 30;
+
+const WMO = { // weather code -> [icon, words]
+  0: ["☀️", "Clear"], 1: ["🌤️", "Mostly clear"], 2: ["⛅", "Partly cloudy"], 3: ["☁️", "Overcast"],
+  45: ["🌫️", "Fog"], 48: ["🌫️", "Freezing fog"],
+  51: ["🌦️", "Light drizzle"], 53: ["🌦️", "Drizzle"], 55: ["🌧️", "Heavy drizzle"],
+  56: ["🌧️", "Freezing drizzle"], 57: ["🌧️", "Freezing drizzle"],
+  61: ["🌦️", "Light rain"], 63: ["🌧️", "Rain"], 65: ["🌧️", "Heavy rain"],
+  66: ["🌧️", "Freezing rain"], 67: ["🌧️", "Freezing rain"],
+  71: ["🌨️", "Light snow"], 73: ["🌨️", "Snow"], 75: ["❄️", "Heavy snow"], 77: ["🌨️", "Snow grains"],
+  80: ["🌦️", "Rain showers"], 81: ["🌧️", "Rain showers"], 82: ["⛈️", "Heavy showers"],
+  85: ["🌨️", "Snow showers"], 86: ["❄️", "Heavy snow showers"],
+  95: ["⛈️", "Thunderstorm"], 96: ["⛈️", "Thunderstorm, hail"], 99: ["⛈️", "Thunderstorm, hail"],
+};
+
+function showWeather(w, stale) {
+  const box = document.getElementById("weather");
+  const [icon, words] = WMO[w.code] || ["🌡️", ""];
+  const age = stale ? `<div class="w-stale">offline · from ${new Date(w.time).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</div>` : "";
+  box.innerHTML =
+    `<span class="w-icon">${icon}</span><span class="w-temp">${Math.round(w.temp)}°</span>` +
+    `<div class="w-info"><b>${words}</b> · feels ${Math.round(w.feels)}°<br>` +
+    `H ${Math.round(w.hi)}° L ${Math.round(w.lo)}° · ${w.rain}% rain${WEATHER.place ? " · " + WEATHER.place : ""}${age}</div>`;
+
+  // Next 5 days (starting tomorrow)
+  document.getElementById("forecast").innerHTML = (w.days || []).map(d => {
+    const [fi, fw] = WMO[d.code] || ["🌡️", ""];
+    const name = new Date(d.date + "T12:00").toLocaleDateString([], { weekday: "short" });
+    return `<div class="f-day" data-date="${d.date}" title="${fw}, ${d.rain}% rain · click to add to Google Calendar"><div class="f-name">${name}</div>` +
+      `<div class="f-icon">${fi}</div><div>${Math.round(d.hi)}° <span class="f-lo">${Math.round(d.lo)}°</span></div></div>`;
+  }).join("");
+}
+
+async function loadWeather() {
+  const box = document.getElementById("weather");
+  if (WEATHER.lat == null) { box.innerHTML = `<span class="w-info">Weather: location not set yet</span>`; return; }
+  let cached = null;
+  try { cached = JSON.parse(localStorage.getItem(WEATHER_KEY)); } catch (e) {}
+  if (cached) showWeather(cached, Date.now() - cached.time > WEATHER_EVERY_MIN * 60000 * 2);
+  try {
+    const url = "https://api.open-meteo.com/v1/forecast?" + new URLSearchParams({
+      latitude: WEATHER.lat, longitude: WEATHER.lon,
+      current: "temperature_2m,apparent_temperature,weather_code",
+      daily: "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+      temperature_unit: "fahrenheit", timezone: "auto", forecast_days: 6,
+    });
+    const d = await (await fetch(url)).json();
+    const w = {
+      time: Date.now(), code: d.current.weather_code,
+      temp: d.current.temperature_2m, feels: d.current.apparent_temperature,
+      hi: d.daily.temperature_2m_max[0], lo: d.daily.temperature_2m_min[0],
+      rain: d.daily.precipitation_probability_max[0] ?? 0,
+      days: d.daily.time.slice(1, 6).map((date, i) => ({
+        date, code: d.daily.weather_code[i + 1],
+        hi: d.daily.temperature_2m_max[i + 1], lo: d.daily.temperature_2m_min[i + 1],
+        rain: d.daily.precipitation_probability_max[i + 1] ?? 0,
+      })),
+    };
+    try { localStorage.setItem(WEATHER_KEY, JSON.stringify(w)); } catch (e) {}
+    showWeather(w, false);
+  } catch (e) {
+    if (cached) showWeather(cached, true);
+    else box.innerHTML = `<span class="w-info">Weather unavailable (offline?)</span>`;
+  }
+}
+loadWeather();
+setInterval(loadWeather, WEATHER_EVERY_MIN * 60000);
+
+// Click a forecast day -> same Add to Google Calendar dialog as the calendar
+document.getElementById("forecast").addEventListener("click", (e) => {
+  const day = e.target.closest(".f-day");
+  if (!day) return;
+  const [y, m, d] = day.dataset.date.split("-").map(Number);
+  openEventDialog(new Date(y, m - 1, d));
+});
+
+// Quote: a random one each time the page opens, ↻ for another. Psychology tip: a new one each day.
+const QUOTES = [
+  ["The impediment to action advances action. What stands in the way becomes the way.", "Marcus Aurelius"],
+  ["Waste no more time arguing what a good man should be. Be one.", "Marcus Aurelius"],
+  ["We suffer more often in imagination than in reality.", "Seneca"],
+  ["Difficulties strengthen the mind, as labor does the body.", "Seneca"],
+  ["Begin at once to live, and count each separate day as a separate life.", "Seneca"],
+  ["First say to yourself what you would be; and then do what you have to do.", "Epictetus"],
+  ["No man is free who is not master of himself.", "Epictetus"],
+  ["He who has a why to live can bear almost any how.", "Friedrich Nietzsche"],
+  ["Knowing is not enough; we must apply.", "Johann Wolfgang von Goethe"],
+  ["Well done is better than well said.", "Benjamin Franklin"],
+  ["Energy and persistence conquer all things.", "Benjamin Franklin"],
+  ["Do what you can, with what you have, where you are.", "Theodore Roosevelt"],
+  ["We are what we repeatedly do.", "Will Durant"],
+  ["Small deeds done are better than great deeds planned.", "Peter Marshall"],
+  ["Amateurs sit and wait for inspiration, the rest of us just get up and go to work.", "Stephen King"],
+  ["What we fear doing most is usually what we most need to do.", "Tim Ferriss"],
+  ["Discipline equals freedom.", "Jocko Willink"],
+  ["Slow is smooth, smooth is fast.", "Military saying"],
+  ["Fall seven times, stand up eight.", "Japanese proverb"],
+  ["The best time to plant a tree was 20 years ago. The second best time is now.", "Proverb"],
+];
+
+const TIPS = [
+  "If-then plans (\"If it's 7 PM, then I go to the gym\") make you far more likely to follow through than a goal alone.",
+  "The spotlight effect: people notice your mistakes and appearance much less than you think they do.",
+  "Peak-end rule: people remember an experience mostly by its most intense moment and how it ended. End meetings and visits on a high note.",
+  "Naming a feeling (\"I'm angry right now\") measurably lowers its intensity. Labeling calms the brain's alarm system.",
+  "Reciprocity: people feel pressure to return a favor, even a small unasked one. Watch for free gifts in sales pitches.",
+  "Anchoring: the first number mentioned pulls every later number toward it. In a negotiation, make the first offer when you can.",
+  "Loss aversion: a loss feels about twice as strong as an equal gain. \"Don't lose $50\" moves people more than \"save $50\".",
+  "Fundamental attribution error: we blame others' behavior on character, our own on circumstances. Assume a bad day first.",
+  "Unfinished tasks keep nagging your mind. Writing down the exact next step is often enough to quiet them.",
+  "Sleep loss hurts judgment and mood, and the sleep-deprived badly underestimate how impaired they are.",
+  "Confirmation bias: we look for evidence that agrees with us. Ask \"what would prove me wrong?\"",
+  "Planning fallacy: we underestimate how long tasks take. Use how long it took last time, not how long it should take.",
+  "Habits form through repetition in the same context. Tie a new habit to something you already do daily.",
+  "Social proof: when unsure, people copy what others are doing. Long lines and \"most people choose\" work for that reason.",
+  "Scarcity: things seem more valuable when they look limited. \"Only 2 left\" is a pressure tactic. Pause before buying.",
+  "Foot-in-the-door: agreeing to a small request makes people likelier to agree to a bigger one later.",
+  "Mere exposure: we tend to like things simply because they're familiar. Repetition builds trust, for good or bad.",
+  "Contrast effect: things are judged against what came just before. A $50 shirt looks cheap after a $300 jacket.",
+  "Hindsight bias: after the fact, outcomes feel obvious. Write predictions down to see how good your judgment really is.",
+  "Silence is powerful: many people rush to fill a pause and will often add more information if you just wait.",
+];
+
+function renderDaily() {
+  const now = new Date();
+  const day = Math.floor((now - now.getTimezoneOffset() * 60000) / 86400000);
+  document.getElementById("tip").textContent = TIPS[day % TIPS.length];
+  if (!document.getElementById("quote").textContent) newQuote();
+}
+
+// Random quote, never the same as the one shown last (remembered across pages)
+function newQuote() {
+  let last = -1;
+  try { last = +localStorage.getItem("homepage-quote"); } catch (e) {}
+  let i = Math.floor(Math.random() * QUOTES.length);
+  if (QUOTES.length > 1 && i === last) i = (i + 1 + Math.floor(Math.random() * (QUOTES.length - 1))) % QUOTES.length;
+  try { localStorage.setItem("homepage-quote", i); } catch (e) {}
+  const [q, by] = QUOTES[i];
+  document.getElementById("quote").textContent = `"${q}"`;
+  document.getElementById("quoteBy").textContent = `— ${by}`;
+}
+document.getElementById("quoteNew").onclick = (e) => {
+  newQuote();
+  const b = e.currentTarget;
+  b.classList.remove("spin"); void b.offsetWidth; b.classList.add("spin");
+};
+
+// Clock (also redraws the calendar and daily text when the date rolls over)
+function tick() {
+  const d = new Date();
+  let h = d.getHours();
+  const ampm = h < 12 ? "AM" : "PM";
+  h = h % 12 || 12;
+  const m = String(d.getMinutes()).padStart(2, "0");
+  document.getElementById("clock").innerHTML = `${h}:${m}<span class="ampm">${ampm}</span>`;
+  document.getElementById("date").textContent =
+    d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  if (d.toDateString() !== shownToday) { shownToday = d.toDateString(); renderCal(); renderDaily(); }
+}
+tick();
+setInterval(tick, 1000);
+</script>
+<script>
+// Theme menu (under View Progress Log), choice saved in this browser.
+// "Match Desktop" uses the Omarchy theme colors that sync_notes.py copies into notes.js.
+const THEMES = [
+  { id: "desktop", name: "Match Desktop" },
+  { id: "neon", name: "Neon" },
+  { id: "tokyo", name: "Tokyo Night" },
+  { id: "catppuccin", name: "Catppuccin" },
+  { id: "dracula", name: "Dracula" },
+  { id: "atom", name: "Atom One Dark" },
+  { id: "nord", name: "Nord" },
+  { id: "gruvbox", name: "Gruvbox" },
+  { id: "purple", name: "Purple" },
+  { id: "synthwave", name: "Synthwave" },
+  { id: "light", name: "Light" },
+  { id: "notebook", name: "Old Notebook" },
+];
+const DESKTOP_VARS = ["--bg", "--panel", "--line", "--text", "--muted", "--dim", "--faint", "--bright", "--cyan", "--pink", "--blue", "--scheme"];
+
+// Desktop colors -> page colors (accent = outlines, color6 = headings, color5 = highlights)
+function desktopVars(d) {
+  const c = d.colors, bg = c.background, fg = c.foreground;
+  const mix = (pct) => `color-mix(in srgb, ${fg} ${pct}%, ${bg})`;
+  const n = parseInt(bg.slice(1), 16), lum = (0.299 * (n >> 16) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255;
+  return {
+    "--bg": bg, "--panel": mix(6), "--line": mix(16), "--text": fg, "--muted": mix(62), "--dim": mix(45),
+    "--faint": mix(28), "--bright": fg, "--cyan": c.color6 || fg, "--pink": c.color5 || c.accent || fg,
+    "--blue": c.accent || c.color4 || fg, "--scheme": lum > 0.5 ? "light" : "dark",
+  };
+}
+
+function applyDesktopTheme() {
+  const root = document.documentElement;
+  for (const k of DESKTOP_VARS) root.style.removeProperty(k);
+  const d = NOTES && NOTES.desktop;
+  if (root.dataset.theme !== "desktop" || !d || !d.colors || !d.colors.background) return;
+  const vars = desktopVars(d);
+  for (const k in vars) root.style.setProperty(k, vars[k]);
+  try { localStorage.setItem("homepage-desktop-vars", JSON.stringify(vars)); } catch (e) {}
+}
+
+(function () {
+  const sel = document.getElementById("themeSel");
+  const root = document.documentElement;
+  function label() {
+    const name = NOTES && NOTES.desktop && NOTES.desktop.name;
+    sel.options[0].text = "Theme: Match Desktop" + (name ? ` (${name})` : "");
+  }
+  for (const t of THEMES) sel.add(new Option("Theme: " + t.name, t.id));
+  sel.value = THEMES.some(t => t.id === root.dataset.theme) ? root.dataset.theme : "neon";
+  label();
+  sel.onchange = () => {
+    root.dataset.theme = sel.value;
+    try { localStorage.setItem("homepage-theme", sel.value); } catch (e) {}
+    applyDesktopTheme();
+  };
+  applyDesktopTheme();
+  setInterval(label, 60000);
+})();
+
+// Version menu (under the Theme menu). index.html remembers the choice; this page is Version 1.
+(function () {
+  const PAGE_VERSION = "1";
+  const VERSIONS = [{ id: "2", name: "Atom One Dark" }, { id: "1", name: "Neon Blue" }];
+  const sel = document.getElementById("versionSel");
+  for (const v of VERSIONS) sel.add(new Option(v.name, v.id));
+  sel.value = PAGE_VERSION;
+  sel.onchange = () => { location.href = "index.html?v=" + sel.value; };
+})();
+</script>
+</body>
+</html>
