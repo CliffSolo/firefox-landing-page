@@ -947,6 +947,18 @@ function applyDesktopTheme() {
   applyDesktopTheme();
   setInterval(label, 60000);
 })();
+
+// Ask Claude box: focused + selected when the page opens; clicking it selects all,
+// so typing replaces whatever is there.
+(() => {
+  const q = document.querySelector("#search input");
+  const grab = () => { q.focus(); q.select(); };
+  grab();
+  window.addEventListener("focus", grab, { once: true });
+  let wasFocused = false;
+  q.addEventListener("mousedown", () => { wasFocused = document.activeElement === q; });
+  q.addEventListener("click", () => { if (!wasFocused) q.select(); });
+})();
 </script>
 </body>
 </html>

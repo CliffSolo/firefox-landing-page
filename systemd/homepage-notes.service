@@ -5,4 +5,4 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 %h/Projects/Homepage/sync_notes.py
+ExecStart=/usr/bin/python3 %h/Dev/Projects/Homepage/sync_notes.py

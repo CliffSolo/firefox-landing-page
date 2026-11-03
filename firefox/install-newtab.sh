@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Makes Firefox open the Homepage in every new tab.
-# Run with: sudo ~/Projects/Homepage/firefox/install-newtab.sh
-# Undo with: sudo ~/Projects/Homepage/firefox/install-newtab.sh --remove
+# Run with: sudo ~/Dev/Projects/Homepage/firefox/install-newtab.sh
+# Undo with: sudo ~/Dev/Projects/Homepage/firefox/install-newtab.sh --remove
 set -e
 here="$(cd "$(dirname "$0")" && pwd)"
 ff=/usr/lib/firefox

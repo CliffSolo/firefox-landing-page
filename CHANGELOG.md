@@ -53,3 +53,7 @@
 
 ## 2026-11-02
 - Added `themes/` folder: every saved look in one place (v1 Neon Blue, v2 Atom One Dark from the other PC), with a README. Drive mirror: Dev/Apps/12 - Firefox Landing Page/Themes/.
+
+## 2026-11-03
+- Ask Claude box is focused and selected when the page opens (Firefox moves focus off the address bar on new tabs); clicking it selects all so typing replaces the text.
+- Moved to `~/Dev/Projects/Homepage`: paths updated in `mozilla.cfg`, `install-newtab.sh`, the notes sync service, the theme hook and `user.js`. Theme hook installed.
