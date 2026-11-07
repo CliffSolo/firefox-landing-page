@@ -26,7 +26,7 @@ Offline Firefox start page. Single file (`index.html`), no internet needed to lo
 ## Layout
 - **Left pane:** link buttons by group (Banks, Expenses and Loans). Edit the `LINKS` list at the top of the script in `index.html`.
 - **Center:** large 12-hour digital clock and date, then an **Ask Claude** box (opens claude.ai in a new tab with your question filled in), the 5-day forecast and today's weather, a random quote (new each time the page opens; the small ↻ shows another) and the daily psychology tip, and a month calendar (today glows; ◀ ▶ and Today buttons).
-- **Right pane:** Restore Session (needs `firefox/mozilla.cfg` installed), Start Desktop Widgets, View Progress Log and the **Theme** menu, then Today's Note, ASAP and Bills Due / Upcoming from the ScrapYard vault.
+- **Right pane:** Restore Session (needs `firefox/mozilla.cfg` installed), Start Desktop Widgets, Daily Log, Log Summary, Courses and the **Theme** menu, then Today's Note, ASAP and Bills Due / Upcoming from the ScrapYard vault.
 
 ## Notes from Obsidian
 Run `./sync_notes.py` to copy today's daily note, `ASAP.md` and `Bills Due This Month.md` into `notes.js` (not committed). Only open tasks show for ASAP and Bills.
@@ -34,7 +34,7 @@ Run `./sync_notes.py` to copy today's daily note, `ASAP.md` and `Bills Due This 
 Automatic: systemd user units in `~/.config/systemd/user/` re-run the sync when the vault root or `01 - Home/Daily Notes/` changes (`homepage-notes.path`), after midnight and at login (`homepage-notes.timer`). The open page re-reads `notes.js` every minute. Turn off with `systemctl --user disable --now homepage-notes.path homepage-notes.timer`. Give a bill a due date with `📅 2026-11-03` or `due 15` (every month) to get a dot on the calendar.
 
 ## Themes
-Pick one from the **Theme** menu under View Progress Log. The choice is saved in this browser.
+Pick one from the **Theme** menu under Daily Log. The choice is saved in this browser.
 
 | Theme | Look |
 |---|---|

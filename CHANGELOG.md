@@ -1,6 +1,14 @@
 
 # Changelog
 
+## 2026-11-07
+- Atom One Dark and Match Desktop themes: each right pane button and the theme picker now has its own text color from the theme's palette (Match Desktop follows the current Omarchy theme).
+- Renamed View Progress Log to Daily Log (opens the live log list).
+- Added a Log Summary button under it: opens the Daily Log Summary directly, from the offline copy.
+- Added a Courses button under Log Summary: opens the Courses page.
+- Scrollbars now match the theme instead of showing bright white.
+- `firefox/mozilla.cfg`: new tabs leave the cursor in the address bar, matching the 2026-11-04 focus setting. Run `install-newtab.sh` to apply it.
+
 ## 2026-10-25
 - First prototype: left pane of link buttons (Banks: SoFi, Fidelity, Bank of America, DCU, USAA, Venmo; Expenses and Loans: Navient Loans), centered 12-hour digital clock with date, month calendar (Sunday start, pink, glowing border on today, prev/next/Today), right half with two empty cyan-outlined boxes (Bills Due This Month, ASAP).
 - All-dark theme based on the first screenshot in `ScrapYard/04 - Dev/Homepage/Theme Examples.md`; cyan + pink accents from the Omarchy/Tokyo Night examples.

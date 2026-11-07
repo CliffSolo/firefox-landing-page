@@ -24,7 +24,7 @@
   /* Pirata One (pirate lettering) for the Old Notebook theme */
   @font-face { font-family: "Pirata One"; font-weight: 400; src: url(fonts/pirata-one-400.woff2) format("woff2"); }
 
-  /* Themes: pick one from the Theme menu under View Progress Log (saved in this browser).
+  /* Themes: pick one from the Theme menu under Daily Log (saved in this browser).
      --blue = outlines, --cyan = headings, --pink = highlights (today, hover, dialog). */
   :root, [data-theme="neon"] {
     --bg: #15171a; --panel: #1e2125; --line: #2c3036;
@@ -238,17 +238,33 @@
   /* Right half: outlined sections, same blue outline + glow as the left pane buttons */
   .right { display: flex; flex-direction: column; gap: var(--gap); min-height: 0; }
   .actions { flex: none; display: flex; flex-direction: column; gap: 8px; }
-  #restoreBtn, #widgetsBtn, #logBtn {
+  #restoreBtn, #widgetsBtn, #logBtn, #summaryBtn, #coursesBtn {
     flex: none; padding: 11px 14px; border-radius: 10px; cursor: pointer;
     background: var(--panel); color: var(--cyan); border: 1px solid var(--blue);
     font: inherit; font-weight: 600; letter-spacing: .04em;
     box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft);
     transition: box-shadow .15s;
   }
-  #logBtn { display: block; text-align: center; text-decoration: none; }
-  #restoreBtn:hover, #restoreBtn:focus-visible, #widgetsBtn:hover, #widgetsBtn:focus-visible, #logBtn:hover, #logBtn:focus-visible {
+  #logBtn, #summaryBtn, #coursesBtn { display: block; text-align: center; text-decoration: none; }
+  #restoreBtn:hover, #restoreBtn:focus-visible, #widgetsBtn:hover, #widgetsBtn:focus-visible, #logBtn:hover, #logBtn:focus-visible, #summaryBtn:hover, #summaryBtn:focus-visible, #coursesBtn:hover, #coursesBtn:focus-visible {
     outline: none; box-shadow: 0 0 12px var(--blue-soft), 0 0 22px var(--blue-soft), inset 0 0 6px var(--blue-soft);
   }
+  /* Atom One Dark: each right pane button gets its own color from the theme's palette */
+  [data-theme="atom"] #restoreBtn { color: #98c379; }
+  [data-theme="atom"] #widgetsBtn { color: #c678dd; }
+  [data-theme="atom"] #logBtn { color: #e5c07b; }
+  [data-theme="atom"] #summaryBtn { color: #e06c75; }
+  [data-theme="atom"] #coursesBtn { color: #56b6c2; }
+  [data-theme="atom"] #themeSel { color: #d19a66; }
+  /* Match Desktop: the same idea, using the current Omarchy theme's colors (set in desktopVars) */
+  [data-theme="desktop"] #restoreBtn { color: var(--btn-1, var(--cyan)); }
+  [data-theme="desktop"] #widgetsBtn { color: var(--btn-2, var(--cyan)); }
+  [data-theme="desktop"] #logBtn { color: var(--btn-3, var(--cyan)); }
+  [data-theme="desktop"] #summaryBtn { color: var(--btn-4, var(--cyan)); }
+  [data-theme="desktop"] #coursesBtn { color: var(--btn-6, var(--cyan)); }
+  [data-theme="desktop"] #themeSel { color: var(--btn-5, var(--cyan)); }
+  /* Scrollbars match the theme everywhere */
+  * { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
   .box {
     flex: 1; min-height: 0; border: 1px solid var(--blue); border-radius: 12px;
     padding: 16px 18px; box-shadow: 0 0 6px var(--blue-soft), inset 0 0 4px var(--blue-soft);
@@ -328,7 +344,7 @@
   dialog .row button.primary { border-color: var(--pink); color: var(--pink); box-shadow: 0 0 8px var(--pink-soft); }
   dialog .row button:hover { border-color: var(--pink); }
 
-  /* Theme menu (under View Progress Log) */
+  /* Theme menu (under Daily Log) */
   #themeSel {
     appearance: none; width: 100%; padding: 11px 36px 11px 14px; border-radius: 10px; cursor: pointer;
     background: var(--panel); color: var(--cyan); border: 1px solid var(--blue);
@@ -385,7 +401,9 @@
     <div class="actions">
       <button id="restoreBtn" title="Reopen your last session, or what you just closed (same as Ctrl+Shift+T)">↺ Restore Session</button>
       <button id="widgetsBtn" title="Start the desktop widgets, or bring them back on top (runs widgets/start-desktop-widgets on this computer)">▦ Start Desktop Widgets</button>
-      <a id="logBtn" href="https://claude.ai/artifact/5NiwirTcuF4Fh16rYi2NEx" target="_blank" rel="noopener" title="Open the Daily Log (what you worked on each day) in its own tab">View Progress Log</a>
+      <a id="logBtn" href="https://claude.ai/artifact/5NiwirTcuF4Fh16rYi2NEx" target="_blank" rel="noopener" title="Open the Daily Log (what you worked on each day) in its own tab">Daily Log</a>
+      <a id="summaryBtn" href="../../../Documents/ScrapYard/04%20-%20Dev/Daily%20Log/Daily%20Log%20(offline).html#summary" target="_blank" rel="noopener" title="Open the Daily Log Summary (the offline copy, updated with every log build); click a project in Month by month for its details">Log Summary</a>
+      <a id="coursesBtn" href="../../../Documents/ScrapYard/05%20-%20Knowledge%20Base/Courses/Home.html" target="_blank" rel="noopener" title="Open your Courses page in its own tab">Courses</a>
       <select id="themeSel" title="Color theme (saved in this browser)" aria-label="Color theme"></select>
     </div>
     <section class="box" id="boxToday"></section>
@@ -889,7 +907,7 @@ tick();
 setInterval(tick, 1000);
 </script>
 <script>
-// Theme menu (under View Progress Log), choice saved in this browser.
+// Theme menu (under Daily Log), choice saved in this browser.
 // "Match Desktop" uses the Omarchy theme colors that sync_notes.py copies into notes.js.
 const THEMES = [
   { id: "desktop", name: "Match Desktop" },
@@ -905,7 +923,7 @@ const THEMES = [
   { id: "light", name: "Light" },
   { id: "notebook", name: "Old Notebook" },
 ];
-const DESKTOP_VARS = ["--bg", "--panel", "--line", "--text", "--muted", "--dim", "--faint", "--bright", "--cyan", "--pink", "--blue", "--scheme"];
+const DESKTOP_VARS = ["--bg", "--panel", "--line", "--text", "--muted", "--dim", "--faint", "--bright", "--cyan", "--pink", "--blue", "--scheme", "--btn-1", "--btn-2", "--btn-3", "--btn-4", "--btn-5", "--btn-6"];
 
 // Desktop colors -> page colors (accent = outlines, color6 = headings, color5 = highlights)
 function desktopVars(d) {
@@ -916,6 +934,7 @@ function desktopVars(d) {
     "--bg": bg, "--panel": mix(6), "--line": mix(16), "--text": fg, "--muted": mix(62), "--dim": mix(45),
     "--faint": mix(28), "--bright": fg, "--cyan": c.color6 || fg, "--pink": c.color5 || c.accent || fg,
     "--blue": c.accent || c.color4 || fg, "--scheme": lum > 0.5 ? "light" : "dark",
+    "--btn-1": c.color2 || fg, "--btn-2": c.color5 || fg, "--btn-3": c.color3 || fg, "--btn-4": c.color1 || fg, "--btn-5": c.color4 || fg, "--btn-6": c.color6 || fg,
   };
 }
 
